@@ -1,4 +1,4 @@
-﻿namespace Clinics.Exports
+﻿namespace ClinicsProgram.Exports
 {
     using System;
     using System.Windows.Forms;

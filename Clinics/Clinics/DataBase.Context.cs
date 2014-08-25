@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Clinics
+namespace ClinicsProgram
 {
     using System;
     using System.Data.Entity;

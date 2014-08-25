@@ -1,4 +1,4 @@
-﻿namespace Clinics.Exports
+﻿namespace ClinicsProgram.Exports
 {
     partial class ExportToExcel
     {

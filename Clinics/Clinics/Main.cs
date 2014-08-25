@@ -1,13 +1,12 @@
-﻿namespace Clinics
+﻿namespace ClinicsProgram
 {
     using System;
     using System.Windows.Forms;
-    using Clinics.Imports;
-    using Clinics.Exports;
-
-    public partial class Main : Form
-    {
-        
+    using ClinicsProgram.Exports;
+    using ClinicsProgram.Imports;
+    
+    partial class Main : Form
+    {  
         public Main()
         {
             InitializeComponent();
@@ -55,7 +54,7 @@
             exportToExcel.ShowDialog();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Exit_Click(object sender, EventArgs e)
         {
             Environment.Exit(1);
         }
