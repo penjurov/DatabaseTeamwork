@@ -1,4 +1,4 @@
-﻿namespace Clinics
+﻿namespace Clinics.Imports
 {
     partial class ImportFromXML
     {
@@ -47,6 +47,7 @@
             this.ClientSize = new System.Drawing.Size(584, 362);
             this.Controls.Add(this.button1);
             this.Name = "ImportFromXML";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Import from XML";
             this.ResumeLayout(false);
 
