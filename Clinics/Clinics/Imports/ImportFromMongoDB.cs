@@ -111,25 +111,9 @@
             }
         }
 
-        private void ImportFromMongo_Click(object sender, EventArgs e)
-        {
-            telerikEntities telerikEntities = new telerikEntities();
-
-            IQueryable<Specialties> specialities =
-            from c in telerikEntities.Specialties
-            where c.Speciality == "Test"
-            select c;
-
-            foreach (var item in specialities)
-            {
-                textBox1.Text = item.SpecialityId.ToString();
-
-            }
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
-            telerikEntities telerikEntities = new telerikEntities();
+            MsSQLServerEntities telerikEntities = new MsSQLServerEntities();
 
             Specialties newSpecialty = new Specialties
             {
