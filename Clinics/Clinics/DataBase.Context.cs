@@ -13,10 +13,10 @@ namespace ClinicsProgram
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class telerikEntities : DbContext
+    public partial class MsSQLServerEntities : DbContext
     {
-        public telerikEntities()
-            : base("name=telerikEntities")
+        public MsSQLServerEntities()
+            : base("name=MsSQLServerEntities")
         {
         }
     
