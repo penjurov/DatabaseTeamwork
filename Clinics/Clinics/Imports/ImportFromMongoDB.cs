@@ -23,14 +23,19 @@
         private void ImportFromMongo_Click(object sender, EventArgs e)
         {
             var titles = mongoDb.GetCollection<BsonDocument>("Titles");
-            var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
-            var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-            var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
-            var specialistsTitles = mongoDb.GetCollection<BsonDocument>("SpecialistsTitles");
-            var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
-
             this.ImportTitles(titles);
+
+            var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
             this.ImportClinics(clinics);
+
+            var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
+            this.ImportProcedures(procedures);
+
+            var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
+            this.ImportSpecialists(specialists);
+
+            var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
+            this.ImportSpecialties(specialties);
 
             mongoServer.Disconnect();
         }
@@ -42,14 +47,12 @@
             foreach (var title in allTitles)
             {
                 var mongoId = title["TitleId"].ToString();
-                var guid = new Guid(mongoId);
+                var idGuid = new Guid(mongoId);
                 var mongoTitle = title["Title"].ToString();
-
-                var test = title.Elements.ToString();
 
                 IQueryable<Titles> exists =
                     from t in this.msSQLServerEntities.Titles
-                    where t.TitleId.Equals(guid)
+                    where t.TitleId.Equals(idGuid)
                     select t;
 
                 if (exists.Count() == 0)
@@ -57,7 +60,7 @@
                     Titles newTitle = new Titles
                     {
                         Title = mongoTitle,
-                        TitleId = guid
+                        TitleId = idGuid
                     };
 
                     this.msSQLServerEntities.Titles.Add(newTitle);
@@ -68,33 +71,145 @@
 
         private void ImportClinics(MongoCollection<BsonDocument> clinics)
         {
-            var allClinics = clinics.FindAll().Fields;
+            var allClinics = clinics.FindAll();
 
-            //foreach (var clinic in allClinics)
-            //{
-            //    var mongoTitle = clinic["Title"].ToString();
-            //    var mongoId = clinic["TitleId"].ToString();
+            foreach (var clinic in allClinics)
+            {
+                var id = clinic["ClinicId"].ToString();
+                var idGuid = new Guid(id);
+                var name = clinic["ClinicName"].ToString();
+                var address = clinic["ClinicAddress"].ToString();
+                var phones = clinic["ClinicPhone"].ToString();
+                var chieff = clinic["ClinicChieff"].ToString();
+                var chieffdGuid = new Guid(chieff);
+             
+                IQueryable<Clinics> exists =
+                    from t in this.msSQLServerEntities.Clinics
+                    where t.ClinicId.Equals(idGuid)
+                    select t;
 
-            //    var guid = new Guid(mongoId);
+                if (exists.Count() == 0)
+                {
+                    Clinics newClinic = new Clinics
+                    {
+                        ClinicId = idGuid,
+                        ClinicName = name,
+                        ClinicAddress = address,
+                        ClinicPhones = phones,
+                        ClinicChief = chieffdGuid
+                    };
 
-            //    IQueryable<Clinics> exists =
-            //        from t in this.msSQLServerEntities.Clinics
-            //        where t.ClinicId.Equals(guid)
-            //        select t;
-
-            //    if (exists.Count() == 0)
-            //    {
-            //        Clinics newClinic = new Clinics
-            //        {
-            //            ClinicId = guid
-            //        };
-
-            //        this.msSQLServerEntities.Clinics.Add(newClinic);
-            //        this.msSQLServerEntities.SaveChanges();
-            //    }
-            //}
+                    this.msSQLServerEntities.Clinics.Add(newClinic);
+                    this.msSQLServerEntities.SaveChanges();
+                }
+            }
         }
 
+        private void ImportProcedures(MongoCollection<BsonDocument> procedures)
+        {
+            var allProcedures = procedures.FindAll();
+
+            foreach (var procedure in allProcedures)
+            {
+                var id = procedure["ProcedureId"].ToString();
+                var idGuid = new Guid(id);
+                var name = procedure["Name"].ToString();
+                var iscCode= procedure["ISCCode"].ToString();
+                var price = Decimal.Parse(procedure["Price"].ToString());
+                var information = procedure["Information"].ToString();
+
+                IQueryable<Procedures> exists =
+                    from t in this.msSQLServerEntities.Procedures
+                    where t.ProcedureId.Equals(idGuid)
+                    select t;
+
+                if (exists.Count() == 0)
+                {
+                    Procedures newProcedure = new Procedures
+                    {
+                        ProcedureId = idGuid,
+                        Name = name,
+                        ISCCode = iscCode,
+                        Price = price,
+                        Information = information
+                    };
+
+                    this.msSQLServerEntities.Procedures.Add(newProcedure);
+                    this.msSQLServerEntities.SaveChanges();
+                }
+            }
+        }
+
+        private void ImportSpecialists(MongoCollection<BsonDocument> specialists)
+        {
+            var allSpecialists = specialists.FindAll();
+
+            foreach (var specialist in allSpecialists)
+            {
+                var mongoId = specialist["ProcedureId"].ToString();
+                var idGuid = new Guid(mongoId);
+                var firstName = specialist["FirstName"].ToString();
+                var middleName = specialist["MiddleName"].ToString();
+                var lastName = specialist["LastName"].ToString();
+                var duty = specialist["Duty"].ToString();
+                var title = int.Parse(specialist["Title"].ToString());
+                var specialty = specialist["Specialty"].ToString();
+                var specialtyGuid = new Guid(specialty);
+                var uin = specialist["UIN"].ToString();
+
+                IQueryable<Specialists> exists =
+                    from t in this.msSQLServerEntities.Specialists
+                    where t.SpecialistId.Equals(idGuid)
+                    select t;
+
+                if (exists.Count() == 0)
+                {
+                    Specialists newSpecialist = new Specialists
+                    {
+                        SpecialistId = idGuid,
+                        FirstName = firstName,
+                        MiddleName = middleName,
+                        LastName = lastName,
+                        Duty = duty,
+                        Title = title,
+                        Specialty = specialtyGuid,
+                        UIN = uin
+                    };
+
+                    this.msSQLServerEntities.Specialists.Add(newSpecialist);
+                    this.msSQLServerEntities.SaveChanges();
+                }
+            }
+        }
+
+        private void ImportSpecialties(MongoCollection<BsonDocument> specialies)
+        {
+            var allSpecialties = specialies.FindAll();
+
+            foreach (var specialty in allSpecialties)
+            {
+                var id = specialty["SpecialtyId"].ToString();
+                var idGuid = new Guid(id);
+                var specialtyName = specialty["Specialty"].ToString();
+
+                IQueryable<Specialties> exists =
+                    from t in this.msSQLServerEntities.Specialties
+                    where t.SpecialityId.Equals(idGuid)
+                    select t;
+
+                if (exists.Count() == 0)
+                {
+                    Specialties newSpecialty = new Specialties
+                    {
+                        SpecialityId = idGuid,
+                        Speciality = specialtyName
+                    };
+
+                    this.msSQLServerEntities.Specialties.Add(newSpecialty);
+                    this.msSQLServerEntities.SaveChanges();
+                }
+            }
+        }
 
         private void button3_Click(object sender, EventArgs e)
         {

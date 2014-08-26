@@ -10,7 +10,6 @@
 namespace ClinicsProgram
 {
     using System;
-    using System.Collections.Generic;
     
     public partial class Clinics
     {
