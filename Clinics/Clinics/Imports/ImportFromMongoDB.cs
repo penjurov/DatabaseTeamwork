@@ -13,31 +13,60 @@
         private static MongoClient mongoClient = new MongoClient(mongoUrl);
         private static MongoServer mongoServer = mongoClient.GetServer();
         private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
-        private MsSQLServerEntities msSQLServerEntities = new MsSQLServerEntities();
+        private MsSQLServerEntities msSqlServerEntities = new MsSQLServerEntities();
 
         public ImportFromMongoDB()
         {
             this.InitializeComponent();
         }
 
+        ~ImportFromMongoDB()  
+        {
+            msSqlServerEntities.Dispose();     
+        }
+
         private void ImportFromMongo_Click(object sender, EventArgs e)
         {
-            var titles = mongoDb.GetCollection<BsonDocument>("Titles");
-            this.ImportTitles(titles);
+            try
+            {
+                var titles = mongoDb.GetCollection<BsonDocument>("Titles");
+                this.ImportTitles(titles);
 
-            var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
-            this.ImportClinics(clinics);
+                var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
+                this.ImportClinics(clinics);
 
-            var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-            this.ImportProcedures(procedures);
+                var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
+                this.ImportProcedures(procedures);
 
-            var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
-            this.ImportSpecialists(specialists);
+                var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
+                this.ImportSpecialists(specialists);
 
-            var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
-            this.ImportSpecialties(specialties);
+                var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
+                this.ImportSpecialties(specialties);
 
-            mongoServer.Disconnect();
+                this.msSqlServerEntities.SaveChanges();
+                mongoServer.Disconnect();
+            }
+            catch(System.Data.Entity.Infrastructure.DbUpdateException er)
+            {
+                MessageBox.Show(er.Message);
+            }
+            catch (MongoConnectionException er)
+            {
+                MessageBox.Show(er.Message);
+            }          
+            catch(MongoAuthenticationException er)
+            {
+                MessageBox.Show(er.Message);
+            }
+            catch(MongoQueryException er)
+            {
+                MessageBox.Show(er.Message);
+            }
+            catch(MongoException er)
+            {
+                MessageBox.Show(er.Message);
+            }          
         }
 
         private void ImportTitles(MongoCollection<BsonDocument> titles)
@@ -50,12 +79,11 @@
                 var idGuid = new Guid(mongoId);
                 var mongoTitle = title["Title"].ToString();
 
-                IQueryable<Titles> exists =
-                    from t in this.msSQLServerEntities.Titles
-                    where t.TitleId.Equals(idGuid)
-                    select t;
+                var exists = this.msSqlServerEntities.Titles
+                    .Where(t => t.TitleId.Equals(idGuid))
+                    .FirstOrDefault();
 
-                if (exists.Count() == 0)
+                if (exists == null)
                 {
                     Titles newTitle = new Titles
                     {
@@ -63,8 +91,7 @@
                         TitleId = idGuid
                     };
 
-                    this.msSQLServerEntities.Titles.Add(newTitle);
-                    this.msSQLServerEntities.SaveChanges();
+                    this.msSqlServerEntities.Titles.Add(newTitle);                  
                 }
             }
         }
@@ -83,12 +110,11 @@
                 var chieff = clinic["ClinicChieff"].ToString();
                 var chieffdGuid = new Guid(chieff);
              
-                IQueryable<Clinics> exists =
-                    from t in this.msSQLServerEntities.Clinics
-                    where t.ClinicId.Equals(idGuid)
-                    select t;
+                var exists = this.msSqlServerEntities.Clinics
+                    .Where(c => c.ClinicId.Equals(idGuid))
+                    .FirstOrDefault();
 
-                if (exists.Count() == 0)
+                if (exists == null)
                 {
                     Clinics newClinic = new Clinics
                     {
@@ -99,8 +125,7 @@
                         ClinicChief = chieffdGuid
                     };
 
-                    this.msSQLServerEntities.Clinics.Add(newClinic);
-                    this.msSQLServerEntities.SaveChanges();
+                    this.msSqlServerEntities.Clinics.Add(newClinic);
                 }
             }
         }
@@ -117,13 +142,12 @@
                 var iscCode= procedure["ISCCode"].ToString();
                 var price = Decimal.Parse(procedure["Price"].ToString());
                 var information = procedure["Information"].ToString();
+                
+                var exists = this.msSqlServerEntities.Procedures
+                    .Where(p => p.ProcedureId.Equals(idGuid))
+                    .FirstOrDefault();
 
-                IQueryable<Procedures> exists =
-                    from t in this.msSQLServerEntities.Procedures
-                    where t.ProcedureId.Equals(idGuid)
-                    select t;
-
-                if (exists.Count() == 0)
+                if (exists == null)
                 {
                     Procedures newProcedure = new Procedures
                     {
@@ -134,8 +158,7 @@
                         Information = information
                     };
 
-                    this.msSQLServerEntities.Procedures.Add(newProcedure);
-                    this.msSQLServerEntities.SaveChanges();
+                    this.msSqlServerEntities.Procedures.Add(newProcedure);
                 }
             }
         }
@@ -156,13 +179,12 @@
                 var specialty = specialist["Specialty"].ToString();
                 var specialtyGuid = new Guid(specialty);
                 var uin = specialist["UIN"].ToString();
+                
+                var exists = this.msSqlServerEntities.Specialists
+                    .Where(s => s.SpecialistId.Equals(idGuid))
+                    .FirstOrDefault();
 
-                IQueryable<Specialists> exists =
-                    from t in this.msSQLServerEntities.Specialists
-                    where t.SpecialistId.Equals(idGuid)
-                    select t;
-
-                if (exists.Count() == 0)
+                if (exists == null)
                 {
                     Specialists newSpecialist = new Specialists
                     {
@@ -176,8 +198,7 @@
                         UIN = uin
                     };
 
-                    this.msSQLServerEntities.Specialists.Add(newSpecialist);
-                    this.msSQLServerEntities.SaveChanges();
+                    this.msSqlServerEntities.Specialists.Add(newSpecialist);
                 }
             }
         }
@@ -192,12 +213,12 @@
                 var idGuid = new Guid(id);
                 var specialtyName = specialty["Specialty"].ToString();
 
-                IQueryable<Specialties> exists =
-                    from t in this.msSQLServerEntities.Specialties
-                    where t.SpecialityId.Equals(idGuid)
-                    select t;
+                
+                var exists = this.msSqlServerEntities.Specialties
+                    .Where(s => s.SpecialityId.Equals(idGuid))
+                    .FirstOrDefault();
 
-                if (exists.Count() == 0)
+                if (exists == null)
                 {
                     Specialties newSpecialty = new Specialties
                     {
@@ -205,8 +226,7 @@
                         Speciality = specialtyName
                     };
 
-                    this.msSQLServerEntities.Specialties.Add(newSpecialty);
-                    this.msSQLServerEntities.SaveChanges();
+                    this.msSqlServerEntities.Specialties.Add(newSpecialty);
                 }
             }
         }
@@ -237,9 +257,6 @@
             };
 
             telerikEntities.Specialties.Add(newSpecialty);
-
-            telerikEntities.SaveChanges();
-
         }
     }
 }
