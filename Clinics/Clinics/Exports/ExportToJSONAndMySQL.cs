@@ -7,7 +7,7 @@
     {
         public ExportToJSONAndMySQL()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

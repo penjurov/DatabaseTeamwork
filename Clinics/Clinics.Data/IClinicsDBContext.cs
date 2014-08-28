@@ -1,8 +1,9 @@
 ﻿namespace Clinics.Data
 {
-    using Clinics.Models;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+
+    using Clinics.Models;
 
     public interface IClinicsDBContext
     {

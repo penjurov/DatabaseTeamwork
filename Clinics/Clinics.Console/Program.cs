@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Clinics.Data;
-using Clinics.Models;
-
-namespace Clinics.Console
+﻿namespace Clinics.Console
 {
-    class Program
+    using System;
+    using Clinics.Data;
+    using Clinics.Models;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
             var data = new ClinicsData();
 

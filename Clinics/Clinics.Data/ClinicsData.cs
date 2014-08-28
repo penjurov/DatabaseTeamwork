@@ -1,9 +1,10 @@
 ﻿namespace Clinics.Data
 {
-    using Clinics.Data.Repositories;
-    using Clinics.Models;
     using System;
     using System.Collections.Generic;
+
+    using Clinics.Data.Repositories;
+    using Clinics.Models;
 
     public class ClinicsData : IClinicsData
     {

@@ -7,7 +7,7 @@
     {
         public ExportToPDF()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

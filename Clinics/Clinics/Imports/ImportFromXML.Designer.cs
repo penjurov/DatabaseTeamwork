@@ -1,11 +1,12 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    partial class ImportFromXML
+    internal partial class ImportFromXML
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.Button button1;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -13,10 +14,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -54,7 +56,5 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
     }
 }

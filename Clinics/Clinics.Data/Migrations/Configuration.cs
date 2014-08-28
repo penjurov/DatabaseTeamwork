@@ -6,9 +6,9 @@
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = false;
-            ContextKey = "Clinics.Data.ClinicsDBContex";
+            this.AutomaticMigrationsEnabled = true;
+            this.AutomaticMigrationDataLossAllowed = false;
+            this.ContextKey = "Clinics.Data.ClinicsDBContex";
         }
 
         protected override void Seed(ClinicsDBContext context)
@@ -16,4 +16,3 @@
         }
     }
 }
-

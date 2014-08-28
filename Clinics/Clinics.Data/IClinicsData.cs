@@ -22,6 +22,5 @@
         void SaveChanges();
 
         void Dispose();
-
     }
 }

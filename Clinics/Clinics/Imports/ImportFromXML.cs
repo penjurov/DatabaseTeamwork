@@ -7,7 +7,7 @@
     {
         public ImportFromXML()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

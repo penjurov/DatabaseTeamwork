@@ -4,12 +4,12 @@
     using System.Windows.Forms;
     using ClinicsProgram.Exports;
     using ClinicsProgram.Imports;
-    
-    partial class Main : Form
+
+    internal partial class Main : Form
     {  
         public Main()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void ImportFromZipExcelToolStripMenuItem_Click(object sender, EventArgs e)

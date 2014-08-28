@@ -29,19 +29,19 @@
 
         public void Add(T entity)
         {
-            var entry = AttachIfDetached(entity);
+            var entry = this.AttachIfDetached(entity);
             entry.State = EntityState.Added;
         }
 
         public void Update(T entity)
         {
-            var entry = AttachIfDetached(entity);
+            var entry = this.AttachIfDetached(entity);
             entry.State = EntityState.Modified;
         }
 
         public void Delete(T entity)
         {
-            var entry = AttachIfDetached(entity);
+            var entry = this.AttachIfDetached(entity);
             entry.State = EntityState.Deleted;
         }
 

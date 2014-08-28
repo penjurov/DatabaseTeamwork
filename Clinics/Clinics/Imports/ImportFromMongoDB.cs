@@ -24,7 +24,7 @@
 
         ~ImportFromMongoDB()  
         {
-            data.Dispose();
+            this.data.Dispose();
         }
 
         private void ImportFromMongo_Click(object sender, EventArgs e)
@@ -49,7 +49,7 @@
                 this.data.SaveChanges();
                 mongoServer.Disconnect();
             }
-            catch(System.Data.Entity.Infrastructure.DbUpdateException er)
+            catch (System.Data.Entity.Infrastructure.DbUpdateException er)
             {
                 MessageBox.Show(er.Message);
             }
@@ -57,15 +57,15 @@
             {
                 MessageBox.Show(er.Message);
             }          
-            catch(MongoAuthenticationException er)
+            catch (MongoAuthenticationException er)
             {
                 MessageBox.Show(er.Message);
             }
-            catch(MongoQueryException er)
+            catch (MongoQueryException er)
             {
                 MessageBox.Show(er.Message);
             }
-            catch(MongoException er)
+            catch (MongoException er)
             {
                 MessageBox.Show(er.Message);
             }          
@@ -141,8 +141,8 @@
                 var id = procedure["ProcedureId"].ToString();
                 var idGuid = new Guid(id);
                 var name = procedure["Name"].ToString();
-                var iscCode= procedure["ISCCode"].ToString();
-                var price = Decimal.Parse(procedure["Price"].ToString());
+                var iscCode = procedure["ISCCode"].ToString();
+                var price = decimal.Parse(procedure["Price"].ToString());
                 var information = procedure["Information"].ToString();
 
                 var exists = this.data.Procedures.All()
@@ -214,7 +214,6 @@
                 var id = specialty["SpecialtyId"].ToString();
                 var idGuid = new Guid(id);
                 var specialtyName = specialty["Specialty"].ToString();
-
 
                 var exists = this.data.Specialties.All()
                     .Where(s => s.Id.Equals(idGuid))

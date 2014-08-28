@@ -7,7 +7,7 @@
     {
         public ImportFromZipExcelFiles()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

@@ -7,7 +7,7 @@
     {
         public ExportToExcel()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

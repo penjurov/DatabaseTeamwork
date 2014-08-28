@@ -6,6 +6,17 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem importDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromZipExcelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromMongoDBToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromXMLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToPDF;
+        private System.Windows.Forms.ToolStripMenuItem exportToToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem exportToJSONToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToExcelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -13,10 +24,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -149,17 +161,5 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem importDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importFromZipExcelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importFromMongoDBToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importFromXMLToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToPDF;
-        private System.Windows.Forms.ToolStripMenuItem exportToToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem exportToJSONToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToExcelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }

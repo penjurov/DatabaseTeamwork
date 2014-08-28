@@ -7,7 +7,7 @@
     {
         public ExportToXML()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }
