@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
     using System.Windows.Forms;
+    using Clinics.Data;
+    using Clinics.Models;
     using MongoDB.Bson;
     using MongoDB.Driver;
 
@@ -13,7 +15,7 @@
         private static MongoClient mongoClient = new MongoClient(mongoUrl);
         private static MongoServer mongoServer = mongoClient.GetServer();
         private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
-        private MsSQLServerEntities msSqlServerEntities = new MsSQLServerEntities();
+        private ClinicsDBContex context = new ClinicsDBContex();
 
         public ImportFromMongoDB()
         {
@@ -22,7 +24,7 @@
 
         ~ImportFromMongoDB()  
         {
-            msSqlServerEntities.Dispose();     
+            context.Dispose();     
         }
 
         private void ImportFromMongo_Click(object sender, EventArgs e)
@@ -44,7 +46,7 @@
                 var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
                 this.ImportSpecialties(specialties);
 
-                this.msSqlServerEntities.SaveChanges();
+                this.context.SaveChanges();
                 mongoServer.Disconnect();
             }
             catch(System.Data.Entity.Infrastructure.DbUpdateException er)
@@ -79,19 +81,19 @@
                 var idGuid = new Guid(mongoId);
                 var mongoTitle = title["Title"].ToString();
 
-                var exists = this.msSqlServerEntities.Titles
-                    .Where(t => t.TitleId.Equals(idGuid))
+                var exists = this.context.Titles
+                    .Where(t => t.Id.Equals(idGuid))
                     .FirstOrDefault();
 
                 if (exists == null)
                 {
-                    Titles newTitle = new Titles
+                    Title newTitle = new Title
                     {
-                        Title = mongoTitle,
-                        TitleId = idGuid
+                        TitleName = mongoTitle,
+                        Id = idGuid
                     };
 
-                    this.msSqlServerEntities.Titles.Add(newTitle);                  
+                    this.context.Titles.Add(newTitle);                  
                 }
             }
         }
@@ -110,22 +112,22 @@
                 var chieff = clinic["ClinicChieff"].ToString();
                 var chieffdGuid = new Guid(chieff);
              
-                var exists = this.msSqlServerEntities.Clinics
-                    .Where(c => c.ClinicId.Equals(idGuid))
+                var exists = this.context.Clinics
+                    .Where(c => c.Id.Equals(idGuid))
                     .FirstOrDefault();
 
                 if (exists == null)
                 {
-                    Clinics newClinic = new Clinics
+                    Clinic newClinic = new Clinic
                     {
-                        ClinicId = idGuid,
+                        Id = idGuid,
                         ClinicName = name,
                         ClinicAddress = address,
                         ClinicPhones = phones,
                         ClinicChief = chieffdGuid
                     };
 
-                    this.msSqlServerEntities.Clinics.Add(newClinic);
+                    this.context.Clinics.Add(newClinic);
                 }
             }
         }
@@ -143,22 +145,22 @@
                 var price = Decimal.Parse(procedure["Price"].ToString());
                 var information = procedure["Information"].ToString();
                 
-                var exists = this.msSqlServerEntities.Procedures
-                    .Where(p => p.ProcedureId.Equals(idGuid))
+                var exists = this.context.Procedures
+                    .Where(p => p.Id.Equals(idGuid))
                     .FirstOrDefault();
 
                 if (exists == null)
                 {
-                    Procedures newProcedure = new Procedures
+                    Procedure newProcedure = new Procedure
                     {
-                        ProcedureId = idGuid,
+                        Id = idGuid,
                         Name = name,
-                        ISCCode = iscCode,
+                        IscCode = iscCode,
                         Price = price,
                         Information = information
                     };
 
-                    this.msSqlServerEntities.Procedures.Add(newProcedure);
+                    this.context.Procedures.Add(newProcedure);
                 }
             }
         }
@@ -180,25 +182,25 @@
                 var specialtyGuid = new Guid(specialty);
                 var uin = specialist["UIN"].ToString();
                 
-                var exists = this.msSqlServerEntities.Specialists
-                    .Where(s => s.SpecialistId.Equals(idGuid))
+                var exists = this.context.Specialists
+                    .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
                 if (exists == null)
                 {
-                    Specialists newSpecialist = new Specialists
+                    Specialist newSpecialist = new Specialist
                     {
-                        SpecialistId = idGuid,
+                        Id = idGuid,
                         FirstName = firstName,
                         MiddleName = middleName,
                         LastName = lastName,
                         Duty = duty,
                         Title = title,
                         Specialty = specialtyGuid,
-                        UIN = uin
+                        Uin = uin
                     };
 
-                    this.msSqlServerEntities.Specialists.Add(newSpecialist);
+                    this.context.Specialists.Add(newSpecialist);
                 }
             }
         }
@@ -214,49 +216,21 @@
                 var specialtyName = specialty["Specialty"].ToString();
 
                 
-                var exists = this.msSqlServerEntities.Specialties
-                    .Where(s => s.SpecialityId.Equals(idGuid))
+                var exists = this.context.Specialties
+                    .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
                 if (exists == null)
                 {
-                    Specialties newSpecialty = new Specialties
+                    Specialty newSpecialty = new Specialty
                     {
-                        SpecialityId = idGuid,
+                        Id = idGuid,
                         Speciality = specialtyName
                     };
 
-                    this.msSqlServerEntities.Specialties.Add(newSpecialty);
+                    this.context.Specialties.Add(newSpecialty);
                 }
             }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            MsSQLServerEntities telerikEntities = new MsSQLServerEntities();
-
-            IQueryable<Specialties> specialities =
-            from c in telerikEntities.Specialties
-            where c.Speciality == "Test"
-            select c;
-
-            foreach (var item in specialities)
-            {
-                textBox1.Text = item.SpecialityId.ToString();
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            MsSQLServerEntities telerikEntities = new MsSQLServerEntities();
-
-            Specialties newSpecialty = new Specialties
-            {
-                SpecialityId = Guid.NewGuid(),
-                Speciality = "Import from the program123"
-            };
-
-            telerikEntities.Specialties.Add(newSpecialty);
         }
     }
 }
