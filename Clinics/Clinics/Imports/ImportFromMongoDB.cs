@@ -15,7 +15,7 @@
         private static MongoClient mongoClient = new MongoClient(mongoUrl);
         private static MongoServer mongoServer = mongoClient.GetServer();
         private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
-        private ClinicsDBContex context = new ClinicsDBContex();
+        private IClinicsData data = new ClinicsData();
 
         public ImportFromMongoDB()
         {
@@ -24,7 +24,7 @@
 
         ~ImportFromMongoDB()  
         {
-            context.Dispose();     
+            data.Dispose();
         }
 
         private void ImportFromMongo_Click(object sender, EventArgs e)
@@ -46,7 +46,7 @@
                 var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
                 this.ImportSpecialties(specialties);
 
-                this.context.SaveChanges();
+                this.data.SaveChanges();
                 mongoServer.Disconnect();
             }
             catch(System.Data.Entity.Infrastructure.DbUpdateException er)
@@ -81,7 +81,7 @@
                 var idGuid = new Guid(mongoId);
                 var mongoTitle = title["Title"].ToString();
 
-                var exists = this.context.Titles
+                var exists = this.data.Titles.All()
                     .Where(t => t.Id.Equals(idGuid))
                     .FirstOrDefault();
 
@@ -93,7 +93,7 @@
                         Id = idGuid
                     };
 
-                    this.context.Titles.Add(newTitle);                  
+                    this.data.Titles.Add(newTitle);                  
                 }
             }
         }
@@ -111,8 +111,8 @@
                 var phones = clinic["ClinicPhone"].ToString();
                 var chieff = clinic["ClinicChieff"].ToString();
                 var chieffdGuid = new Guid(chieff);
-             
-                var exists = this.context.Clinics
+
+                var exists = this.data.Clinics.All()
                     .Where(c => c.Id.Equals(idGuid))
                     .FirstOrDefault();
 
@@ -127,7 +127,7 @@
                         ClinicChief = chieffdGuid
                     };
 
-                    this.context.Clinics.Add(newClinic);
+                    this.data.Clinics.Add(newClinic);
                 }
             }
         }
@@ -144,8 +144,8 @@
                 var iscCode= procedure["ISCCode"].ToString();
                 var price = Decimal.Parse(procedure["Price"].ToString());
                 var information = procedure["Information"].ToString();
-                
-                var exists = this.context.Procedures
+
+                var exists = this.data.Procedures.All()
                     .Where(p => p.Id.Equals(idGuid))
                     .FirstOrDefault();
 
@@ -160,7 +160,7 @@
                         Information = information
                     };
 
-                    this.context.Procedures.Add(newProcedure);
+                    this.data.Procedures.Add(newProcedure);
                 }
             }
         }
@@ -181,8 +181,8 @@
                 var specialty = specialist["Specialty"].ToString();
                 var specialtyGuid = new Guid(specialty);
                 var uin = specialist["UIN"].ToString();
-                
-                var exists = this.context.Specialists
+
+                var exists = this.data.Specialists.All()
                     .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
@@ -200,7 +200,7 @@
                         Uin = uin
                     };
 
-                    this.context.Specialists.Add(newSpecialist);
+                    this.data.Specialists.Add(newSpecialist);
                 }
             }
         }
@@ -215,8 +215,8 @@
                 var idGuid = new Guid(id);
                 var specialtyName = specialty["Specialty"].ToString();
 
-                
-                var exists = this.context.Specialties
+
+                var exists = this.data.Specialties.All()
                     .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
@@ -228,7 +228,7 @@
                         Speciality = specialtyName
                     };
 
-                    this.context.Specialties.Add(newSpecialty);
+                    this.data.Specialties.Add(newSpecialty);
                 }
             }
         }

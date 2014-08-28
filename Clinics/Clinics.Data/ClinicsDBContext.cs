@@ -6,12 +6,12 @@
     using Clinics.Data.Migrations;
     using Clinics.Models;
 
-    public class ClinicsDBContex : DbContext
+    public class ClinicsDBContext : DbContext, IClinicsDBContext
     {
-        public ClinicsDBContex()
+        public ClinicsDBContext()
             : base("ClinicsProgramConnection")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ClinicsDBContex, Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ClinicsDBContext, Configuration>());
         }
 
         public IDbSet<Clinic> Clinics { get; set; }
@@ -27,5 +27,21 @@
         public IDbSet<Specialty> Specialties { get; set; }
 
         public IDbSet<Title> Titles { get; set; }
+
+
+        public new IDbSet<T> Set<T>() where T : class
+        {
+            return base.Set<T>();
+        }
+
+        public new void SaveChanges()
+        {
+            base.SaveChanges();
+        }
+
+        public new void Dispose()
+        {
+            base.Dispose();
+        }
     }
 }

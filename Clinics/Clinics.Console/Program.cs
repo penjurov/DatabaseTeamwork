@@ -12,15 +12,15 @@ namespace Clinics.Console
     {
         static void Main(string[] args)
         {
-            ClinicsDBContex context = new ClinicsDBContex();
+            var data = new ClinicsData();
 
-            context.Titles.Add(new Title()
+            data.Titles.Add(new Title()
                 {
                     Id = Guid.NewGuid(),
                     TitleName = "Test"
                 });
 
-            context.SaveChanges();
+            data.SaveChanges();
         }
     }
 }
