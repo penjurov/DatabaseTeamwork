@@ -73,11 +73,11 @@
 
                 //    <?xml version="1.0" encoding="utf-8"?>
                 //    <reports>
-                //      <report clinic="Clinic A">
-                //        <summary date="8/29/2014" expense="12365.01" />
+                //      <report specialists="Иван Петров">
+                //        <summary date="8/29/2014" count = "4" expense="12365.01" />
                 //        <summary date="8/19/2014" expense="4545.20" />
                 //      </report>
-                //      <report clinic="Clinic B">
+                //      <report clinic="Petar Ivanov">
                 //        <summary date="9/11/2014" expense="12365.01" />
                 //        <summary date="8/22/2014" expense="4545.20" />
                 //      </report>
