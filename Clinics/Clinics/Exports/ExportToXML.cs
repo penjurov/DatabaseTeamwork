@@ -111,9 +111,10 @@
 
                 foreach (var manipulation in db.Manipulations)
                 {
-                    Decimal sum = manipulation.Procedures.Price;
+                    Decimal sum = manipulation.Procedure.Price;
                     DateTime day = manipulation.Date;
-                    string specName = manipulation.Specialists.LastName;
+
+                    string specName = manipulation.Specialist.LastName;
 
                     if (!specialists.ContainsKey(specName))
                     {
