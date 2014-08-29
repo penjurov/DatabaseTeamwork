@@ -1,2 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<expenses />
+<reports>
+  <report clinic="Clinic A">
+    <summary date="8/29/2014" expense="12365.01" />
+    <summary date="8/19/2014" expense="4545.20" />
+  </report>
+  <report clinic="Clinic B">
+    <summary date="9/11/2014" expense="12365.01" />
+    <summary date="8/22/2014" expense="4545.20" />
+  </report>
+</reports>
