@@ -9,6 +9,13 @@
 
     public partial class ExportToXML : Form
     {
+        public class DailyReport
+        {
+            public DateTime Date { get; set; }
+            public decimal Expenses { get; set; }
+            public int ManipulationCount { get; set; }
+        }
+
         public ExportToXML()
         {
             this.InitializeComponent();
@@ -19,109 +26,144 @@
             int month = this.Month.SelectedIndex + 1;
             int year = int.Parse(this.Year.Text);
 
-            // Generating monthly report by clinic as XML file...            
-
-            // AT THE MOMENT WORKS WITH FAKE DATA, UNCOMMENT THE METHOD BELOW TO WORK WITH THE DATABASE
-            //var reports = RetrieveReportFromDB(year, month);
-            var reports = RetrieveReportTest(year, month);
-            var clinicsReport = new XElement("reports", GetExpensesXML(reports));
-            clinicsReport.Save("../../Reports/Clinics-Monhtly-Reports.xml");
+            // Generating monthly report by clinic as XML file... 
+            if (true)
+            {
+                CreateSampleReport();
+            }
+            else
+            {
+                var reports = RetrieveReportFromDB(year, month);
+                //var reports = RetrieveReportTest(year, month);
+                var clinicsReport = new XElement("reports", GetReportsXML(reports));
+                clinicsReport.Save("../../Reports/Specialists-Monthly-Reports.xml");
+            }
 
             MessageBox.Show("XML report generated in the Reports folder.");
         }
 
-        private List<XElement> GetExpensesXML(Dictionary<string, Dictionary<DateTime, Decimal>> reports)
+        private List<XElement> GetReportsXML(Dictionary<string, Dictionary<DateTime, DailyReport>> reports)
         {
-            var sales = new List<XElement>();
-            foreach (var report in reports)
+            var specialistsXML = new List<XElement>();
+            foreach (var specialist in reports)
             {
-                var dailySummaries = GetDailySummariesXML(report.Value);
-                var expense = new XElement("report", dailySummaries);
-                expense.SetAttributeValue("clinic", report.Key);
-                sales.Add(expense);
+                var specialistXML = new XElement("specialist", GetDailyReportsXML(specialist.Value));
+                specialistXML.SetAttributeValue("name", specialist.Key);
+                specialistsXML.Add(specialistXML);
             }
 
-            return sales;
+            return specialistsXML;
         }
 
-        private List<XElement> GetDailySummariesXML(Dictionary<DateTime, Decimal> report)
+        private List<XElement> GetDailyReportsXML(Dictionary<DateTime, DailyReport> dailyReports)
         {
-            var dailySummary = new List<XElement>();
-            foreach (var item in report)
+            var dailyReportsXML = new List<XElement>();
+            foreach (var daily in dailyReports)
             {
-                var elementAsString = String.Format(
-                    @"<summary date=""{0}"" expense=""{1:.00}"" />",
-                    item.Key.ToShortDateString(),
-                    item.Value);
+                var dateXML = new XElement("day");
+                dateXML.SetAttributeValue("date", daily.Key.ToShortDateString());
 
-                var summary = XElement.Parse(elementAsString);
-                dailySummary.Add(summary);
+                var expenseXML = new XElement("expense");
+                expenseXML.Value = daily.Value.Expenses.ToString();
+
+                var countXML = new XElement("manipulations");
+                countXML.Value = daily.Value.ManipulationCount.ToString();
+
+                dateXML.Add(expenseXML, countXML);
+
+                dailyReportsXML.Add(dateXML);
             }
 
-            return dailySummary;
+            return dailyReportsXML;
         }
 
-        public static Dictionary<string, Dictionary<DateTime, Decimal>> RetrieveReportFromDB(int year, int month)
+        public static Dictionary<string, Dictionary<DateTime, DailyReport>> RetrieveReportFromDB(int year, int month)
         {
-            var dailyByClinic = new Dictionary<string, Dictionary<DateTime, decimal>>();
+            var specialists = new Dictionary<string, Dictionary<DateTime, DailyReport>>();
 
             using (var db = new ClinicsDBContext())
             {
                 var result = db.Manipulations.Where(m => m.Date.Year == year && m.Date.Month == month);
 
                 // This is how it will look:
-
-                //    <?xml version="1.0" encoding="utf-8"?>
-                //    <reports>
-                //      <report specialists="Иван Петров">
-                //        <summary date="8/29/2014" count = "4" expense="12365.01" />
-                //        <summary date="8/19/2014" expense="4545.20" />
-                //      </report>
-                //      <report clinic="Petar Ivanov">
-                //        <summary date="9/11/2014" expense="12365.01" />
-                //        <summary date="8/22/2014" expense="4545.20" />
-                //      </report>
-                //    </reports>
+                //    <specialists>
+                //      <specialist name="Nakov">
+                //        <day date="8/28/2014">
+                //          <expense>12365.01</expense>
+                //          <manipulations>6</manipulations>
+                //        </day>
+                //        <day date="8/29/2014">
+                //          <expense>265.01</expense>
+                //          <manipulations>2</manipulations>
+                //        </day>
+                //      </specialist>
+                //      <specialist name="Minkov">
+                //        <day date="8/28/2014">
+                //          <expense>555.01</expense>
+                //          <manipulations>4</manipulations>
+                //        </day>
+                //        <day date="8/29/2014">
+                //          <expense>6665.01</expense>
+                //          <manipulations>5</manipulations>
+                //        </day>
+                //      </specialist>
+                //    </specialists>
 
                 foreach (var manipulation in db.Manipulations)
                 {
                     Decimal sum = manipulation.Procedure.Price;
                     DateTime day = manipulation.Date;
-                    //string procedureName = manipulation.Procedures.Name;
 
-                    string clinicName = manipulation.Specialist.Clinics.First().ClinicName;
+                    string specName = manipulation.Specialist.LastName;
 
-                    if (dailyByClinic.ContainsKey(clinicName) == false)
+                    if (!specialists.ContainsKey(specName))
                     {
-                        dailyByClinic.Add(clinicName, new Dictionary<DateTime, decimal>());
+                        specialists.Add(specName, new Dictionary<DateTime, DailyReport>());
                     }
 
-                    if (dailyByClinic[clinicName].ContainsKey(day) == false)
+                    if (!specialists[specName].ContainsKey(day))
                     {
-                        dailyByClinic[clinicName].Add(day, 0);
+                        specialists[specName].Add(day, new DailyReport());
                     }
 
-                    dailyByClinic[clinicName][day] += sum;
+                    specialists[specName][day].Expenses += sum;
+                    specialists[specName][day].ManipulationCount++;
                 }
 
-                return dailyByClinic;
+                return specialists;
             }
         }
 
-        public static Dictionary<string, Dictionary<DateTime, Decimal>> RetrieveReportTest(int year, int month)
+        private static void CreateSampleReport()
         {
-            var dailyByClinic = new Dictionary<string, Dictionary<DateTime, decimal>>();
+            var day = new XElement("day");
+            day.SetAttributeValue("date", "8/28/2014");
+            day.Add(new XElement("expense", "12365.01"), new XElement("manipulations", "6"));
 
-            dailyByClinic.Add("Clinic A", new Dictionary<DateTime, decimal>());
-            dailyByClinic.Add("Clinic B", new Dictionary<DateTime, decimal>());
+            var day2 = new XElement("day");
+            day2.SetAttributeValue("date", "8/29/2014");
+            day2.Add(new XElement("expense", "265.01"), new XElement("manipulations", "2"));
 
-            dailyByClinic["Clinic A"].Add(DateTime.Now, 12365.01m);
-            dailyByClinic["Clinic A"].Add(DateTime.Now.AddDays(-10), 4545.20m);
+            var spec1 = new XElement("specialist", day, day2);
+            spec1.SetAttributeValue("name", "Nakov");
 
-            dailyByClinic["Clinic B"].Add(DateTime.Now.AddDays(13), 12365.01m);
-            dailyByClinic["Clinic B"].Add(DateTime.Now.AddDays(-7), 4545.20m);
+            ////////////
+            var day3 = new XElement("day");
+            day3.SetAttributeValue("date", "8/28/2014");
+            day3.Add(new XElement("expense", "555.01"), new XElement("manipulations", "4"));
 
-            return dailyByClinic;
+            var day4 = new XElement("day");
+            day4.SetAttributeValue("date", "8/29/2014");
+            day4.Add(new XElement("expense", "6665.01"), new XElement("manipulations", "5"));
+
+            var spec2 = new XElement("specialist", day3, day4);
+            spec2.SetAttributeValue("name", "Minkov");
+
+
+            //////
+            var specialists = new XElement("specialists", spec1, spec2);
+
+            specialists.Save("../../Reports/Clinics-Monhtly-Reports.xml");
         }
     }
 }
