@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    internal partial class ImportFromMongoDB
+    public partial class ImportFromMongoDB
     {
         /// <summary>
         /// Required designer variable.

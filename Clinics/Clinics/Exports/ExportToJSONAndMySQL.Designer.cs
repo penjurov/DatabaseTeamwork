@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Exports
 {
-    internal partial class ExportToJSONAndMySQL
+    public partial class ExportToJSONAndMySQL
     {
         /// <summary>
         /// Required designer variable.

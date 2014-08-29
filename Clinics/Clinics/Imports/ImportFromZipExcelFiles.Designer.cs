@@ -1,12 +1,12 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    internal partial class ImportFromZipExcelFiles
+    public partial class ImportFromZipExcelFiles
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnImport;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -30,24 +30,41 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
+            this.fileDialogBrowseZipFile = new System.Windows.Forms.OpenFileDialog();
+            this.btnBrowseZipFile = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // button1
+            // btnImport
             // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Import";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnImport.Location = new System.Drawing.Point(12, 12);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.TabIndex = 0;
+            this.btnImport.Text = "Import";
+            this.btnImport.UseVisualStyleBackColor = true;
+            // 
+            // fileDialogBrowseZipFile
+            // 
+            this.fileDialogBrowseZipFile.FileName = "openFileDialog1";
+            // 
+            // btnBrowseZipFile
+            // 
+            this.btnBrowseZipFile.Location = new System.Drawing.Point(257, 96);
+            this.btnBrowseZipFile.Name = "btnBrowseZipFile";
+            this.btnBrowseZipFile.Size = new System.Drawing.Size(141, 23);
+            this.btnBrowseZipFile.TabIndex = 1;
+            this.btnBrowseZipFile.Text = "Browse for ZIP file...";
+            this.btnBrowseZipFile.UseVisualStyleBackColor = true;
+            this.btnBrowseZipFile.Click += new System.EventHandler(this.btnBrowseZipFile_Click);
             // 
             // ImportFromZipExcelFiles
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnBrowseZipFile);
+            this.Controls.Add(this.btnImport);
             this.Name = "ImportFromZipExcelFiles";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Import from ZIP(Excel)";
@@ -56,5 +73,8 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.OpenFileDialog fileDialogBrowseZipFile;
+        private System.Windows.Forms.Button btnBrowseZipFile;
     }
 }

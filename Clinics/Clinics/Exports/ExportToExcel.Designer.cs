@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Exports
 {
-    internal partial class ExportToExcel
+    public partial class ExportToExcel
     {
         /// <summary>
         /// Required designer variable.
@@ -95,6 +95,7 @@
             this.button1.TabIndex = 5;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ExportToExcel
             // 

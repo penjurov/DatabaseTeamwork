@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Exports
 {
-    internal partial class ExportToPDF
+    public partial class ExportToPDF
     {
         /// <summary>
         /// Required designer variable.

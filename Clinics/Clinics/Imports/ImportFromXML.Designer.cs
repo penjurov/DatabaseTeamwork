@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    internal partial class ImportFromXML
+    public partial class ImportFromXML
     {
         /// <summary>
         /// Required designer variable.
