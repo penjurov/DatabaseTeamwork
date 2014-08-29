@@ -34,24 +34,20 @@
                 var titles = mongoDb.GetCollection<BsonDocument>("Titles");
                 this.ImportTitles(titles);
 
-                var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
-                this.ImportClinics(clinics);
-
                 var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
                 this.ImportProcedures(procedures);
-
-                var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
-                this.ImportSpecialists(specialists);
 
                 var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
                 this.ImportSpecialties(specialties);
 
+                var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
+                this.ImportSpecialists(specialists);
+
+                var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
+                this.ImportClinics(clinics);
+
                 this.data.SaveChanges();
                 mongoServer.Disconnect();
-            }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException er)
-            {
-                MessageBox.Show(er.Message);
             }
             catch (MongoConnectionException er)
             {
@@ -104,12 +100,12 @@
 
             foreach (var clinic in allClinics)
             {
-                var id = clinic["ClinicId"].ToString();
+                var id = clinic["Id"].ToString();
                 var idGuid = new Guid(id);
                 var name = clinic["ClinicName"].ToString();
                 var address = clinic["ClinicAddress"].ToString();
-                var phones = clinic["ClinicPhone"].ToString();
-                var chieff = clinic["ClinicChieff"].ToString();
+                var phones = clinic["ClinicPhones"].ToString();
+                var chieff = clinic["ClinicChiefId"].ToString();
                 var chieffdGuid = new Guid(chieff);
 
                 var exists = this.data.Clinics.All()
@@ -124,7 +120,7 @@
                         ClinicName = name,
                         ClinicAddress = address,
                         ClinicPhones = phones,
-                        ClinicChief = chieffdGuid
+                        ClinicChiefId = chieffdGuid
                     };
 
                     this.data.Clinics.Add(newClinic);
@@ -138,10 +134,9 @@
 
             foreach (var procedure in allProcedures)
             {
-                var id = procedure["ProcedureId"].ToString();
+                var id = procedure["Id"].ToString();
                 var idGuid = new Guid(id);
                 var name = procedure["Name"].ToString();
-                var iscCode = procedure["ISCCode"].ToString();
                 var price = decimal.Parse(procedure["Price"].ToString());
                 var information = procedure["Information"].ToString();
 
@@ -155,7 +150,6 @@
                     {
                         Id = idGuid,
                         Name = name,
-                        IscCode = iscCode,
                         Price = price,
                         Information = information
                     };
@@ -171,16 +165,16 @@
 
             foreach (var specialist in allSpecialists)
             {
-                var mongoId = specialist["ProcedureId"].ToString();
+                var mongoId = specialist["Id"].ToString();
                 var idGuid = new Guid(mongoId);
                 var firstName = specialist["FirstName"].ToString();
                 var middleName = specialist["MiddleName"].ToString();
                 var lastName = specialist["LastName"].ToString();
-                var duty = specialist["Duty"].ToString();
-                var title = int.Parse(specialist["Title"].ToString());
-                var specialty = specialist["Specialty"].ToString();
+                var title = specialist["TitleId"].ToString();
+                var titleGuid = new Guid(title);
+                var specialty = specialist["SpecialtyId"].ToString();
                 var specialtyGuid = new Guid(specialty);
-                var uin = specialist["UIN"].ToString();
+                var uin = specialist["Uin"].ToString();
 
                 var exists = this.data.Specialists.All()
                     .Where(s => s.Id.Equals(idGuid))
@@ -194,9 +188,8 @@
                         FirstName = firstName,
                         MiddleName = middleName,
                         LastName = lastName,
-                        Duty = duty,
-                        Title = title,
-                        Specialty = specialtyGuid,
+                        SpecialtyId = specialtyGuid,
+                        TitleId = titleGuid,
                         Uin = uin
                     };
 

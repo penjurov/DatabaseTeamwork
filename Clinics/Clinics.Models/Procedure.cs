@@ -15,8 +15,6 @@
 
         public string Name { get; set; }
 
-        public string IscCode { get; set; }
-
         public decimal Price { get; set; }
 
         public string Information { get; set; }

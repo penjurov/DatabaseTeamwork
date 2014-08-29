@@ -10,10 +10,10 @@
 
         public string ClinicPhones { get; set; }
 
-        public System.Guid ClinicChief { get; set; }
+        public System.Guid ClinicChiefId { get; set; }
 
         public bool Deleted { get; set; }
-    
-        public virtual Specialist Specialist { get; set; }
+
+        public virtual Specialist ClinicChief { get; set; }
     }
 }

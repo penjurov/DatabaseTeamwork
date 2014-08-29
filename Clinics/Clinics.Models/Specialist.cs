@@ -6,13 +6,11 @@
     {
         private ICollection<Clinic> clinics;
         private ICollection<Manipulation> manupulations;
-        private ICollection<Title> titles;
 
         public Specialist()
         {
             this.clinics = new HashSet<Clinic>();
             this.manupulations = new HashSet<Manipulation>();
-            this.titles = new HashSet<Title>();
         }
     
         public System.Guid Id { get; set; }
@@ -23,11 +21,9 @@
 
         public string LastName { get; set; }
 
-        public string Duty { get; set; }
+        public System.Guid SpecialtyId { get; set; }
 
-        public int Title { get; set; }
-
-        public System.Guid Specialty { get; set; }
+        public System.Guid TitleId { get; set; }
 
         public string Uin { get; set; }
 
@@ -59,19 +55,8 @@
             }
         }
 
-        public virtual Specialty Specialties { get; set; }
+        public virtual Specialty Specialty { get; set; }
 
-        public virtual ICollection<Title> Titles 
-        { 
-            get
-            {
-                return this.titles;
-            }
-
-            set
-            {
-                this.titles = value;
-            }
-        }
+        public virtual Title Title { get; set; }
     }
 }

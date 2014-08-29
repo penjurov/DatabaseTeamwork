@@ -7,7 +7,7 @@
         public Configuration()
         {
             this.AutomaticMigrationsEnabled = true;
-            this.AutomaticMigrationDataLossAllowed = false;
+            this.AutomaticMigrationDataLossAllowed = true;
             this.ContextKey = "Clinics.Data.ClinicsDBContex";
         }
 
