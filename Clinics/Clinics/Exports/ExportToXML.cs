@@ -85,11 +85,11 @@
 
                 foreach (var manipulation in db.Manipulations)
                 {
-                    Decimal sum = manipulation.Procedures.Price;
+                    Decimal sum = manipulation.Procedure.Price;
                     DateTime day = manipulation.Date;
                     //string procedureName = manipulation.Procedures.Name;
 
-                    string clinicName = manipulation.Specialists.Clinics.First().ClinicName;
+                    string clinicName = manipulation.Specialist.Clinics.First().ClinicName;
 
                     if (dailyByClinic.ContainsKey(clinicName) == false)
                     {
