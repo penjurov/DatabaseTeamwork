@@ -1,8 +1,11 @@
 ﻿namespace ClinicsProgram.Imports
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data.Entity.Validation;
     using System.Linq;
     using System.Windows.Forms;
+
     using Clinics.Data;
     using Clinics.Models;
     using MongoDB.Bson;
@@ -10,7 +13,8 @@
 
     public partial class ImportFromMongoDB : Form
     {
-        private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";
+        private const int NumberOfTables = 5;
+        private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";        
         private static MongoUrl mongoUrl = new MongoUrl(MongoUri);
         private static MongoClient mongoClient = new MongoClient(mongoUrl);
         private static MongoServer mongoServer = mongoClient.GetServer();
@@ -31,23 +35,43 @@
         {
             try
             {
+                this.importProgress.Visible = true;
+                this.importProgress.Value = 0;
+                this.importProgress.Maximum = NumberOfTables;
+
                 var titles = mongoDb.GetCollection<BsonDocument>("Titles");
                 this.ImportTitles(titles);
+                this.importProgress.Value++;
 
                 var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
                 this.ImportProcedures(procedures);
+                this.importProgress.Value++;
 
                 var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
                 this.ImportSpecialties(specialties);
+                this.importProgress.Value++;
 
                 var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
                 this.ImportSpecialists(specialists);
+                this.importProgress.Value++;
 
                 var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
                 this.ImportClinics(clinics);
+                this.importProgress.Value++;
 
                 this.data.SaveChanges();
                 mongoServer.Disconnect();
+                this.importProgress.Visible = false;
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var errorMessages = ex.EntityValidationErrors
+                        .SelectMany(x => x.ValidationErrors)
+                        .Select(x => x.ErrorMessage);
+
+                var fullErrorMessage = string.Join("; ", errorMessages);
+                var exceptionMessage = string.Concat(ex.Message, " The validation errors are: ", fullErrorMessage);
+                throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);  
             }
             catch (MongoConnectionException er)
             {
@@ -75,7 +99,8 @@
             {
                 var mongoId = title["TitleId"].ToString();
                 var idGuid = new Guid(mongoId);
-                var mongoTitle = title["Title"].ToString();
+
+                string titleName = this.GetValue(title, "Title");
 
                 var exists = this.data.Titles.All()
                     .Where(t => t.Id.Equals(idGuid))
@@ -85,11 +110,16 @@
                 {
                     Title newTitle = new Title
                     {
-                        TitleName = mongoTitle,
-                        Id = idGuid
+                        Id = idGuid,
+                        TitleName = titleName
                     };
 
                     this.data.Titles.Add(newTitle);                  
+                }
+                else
+                {
+                    var existingTitles = this.data.Titles.SearchFor(t => t.Id.Equals(idGuid)).First();
+                    existingTitles.TitleName = titleName;
                 }
             }
         }
@@ -100,12 +130,14 @@
 
             foreach (var clinic in allClinics)
             {
-                var id = clinic["Id"].ToString();
+                var id = this.GetValue(clinic, "Id");
                 var idGuid = new Guid(id);
-                var name = clinic["ClinicName"].ToString();
-                var address = clinic["ClinicAddress"].ToString();
-                var phones = clinic["ClinicPhones"].ToString();
-                var chieff = clinic["ClinicChiefId"].ToString();
+
+                string name = this.GetValue(clinic, "ClinicName");
+                string address = this.GetValue(clinic, "ClinicAddress");
+                var phones = this.GetValue(clinic, "ClinicPhones");
+
+                var chieff = this.GetValue(clinic, "ClinicChiefId");
                 var chieffdGuid = new Guid(chieff);
 
                 var exists = this.data.Clinics.All()
@@ -125,6 +157,14 @@
 
                     this.data.Clinics.Add(newClinic);
                 }
+                else
+                {
+                    var existingClinic = this.data.Clinics.SearchFor(p => p.Id.Equals(idGuid)).First();
+                    existingClinic.ClinicName = name;
+                    existingClinic.ClinicAddress = address;
+                    existingClinic.ClinicPhones = phones;
+                    existingClinic.ClinicChiefId = chieffdGuid;
+                }
             }
         }
 
@@ -134,11 +174,10 @@
 
             foreach (var procedure in allProcedures)
             {
-                var id = procedure["Id"].ToString();
-                var idGuid = new Guid(id);
-                var name = procedure["Name"].ToString();
-                var price = decimal.Parse(procedure["Price"].ToString());
-                var information = procedure["Information"].ToString();
+                var idGuid = procedure["_id"].AsGuid;
+                var name = this.GetValue(procedure, "Name");
+                var price = decimal.Parse(this.GetValue(procedure, "Price"));
+                var information = this.GetValue(procedure, "Information");
 
                 var exists = this.data.Procedures.All()
                     .Where(p => p.Id.Equals(idGuid))
@@ -156,6 +195,13 @@
 
                     this.data.Procedures.Add(newProcedure);
                 }
+                else
+                {
+                    var existingProcedure = this.data.Procedures.SearchFor(p => p.Id.Equals(idGuid)).First();
+                    existingProcedure.Name = name;
+                    existingProcedure.Price = price;
+                    existingProcedure.Information = information;
+                }
             }
         }
 
@@ -165,16 +211,20 @@
 
             foreach (var specialist in allSpecialists)
             {
-                var mongoId = specialist["Id"].ToString();
+                var mongoId = this.GetValue(specialist, "Id");
                 var idGuid = new Guid(mongoId);
-                var firstName = specialist["FirstName"].ToString();
-                var middleName = specialist["MiddleName"].ToString();
-                var lastName = specialist["LastName"].ToString();
-                var title = specialist["TitleId"].ToString();
+
+                var firstName = this.GetValue(specialist, "FirstName");
+                var middleName = this.GetValue(specialist, "MiddleName");
+                var lastName = this.GetValue(specialist, "LastName");
+
+                var title = this.GetValue(specialist, "TitleId");
                 var titleGuid = new Guid(title);
-                var specialty = specialist["SpecialtyId"].ToString();
+
+                var specialty = this.GetValue(specialist, "SpecialtyId");
                 var specialtyGuid = new Guid(specialty);
-                var uin = specialist["Uin"].ToString();
+
+                var uin = this.GetValue(specialist, "Uin");
 
                 var exists = this.data.Specialists.All()
                     .Where(s => s.Id.Equals(idGuid))
@@ -195,6 +245,16 @@
 
                     this.data.Specialists.Add(newSpecialist);
                 }
+                else
+                {
+                    var existingSpecialist = this.data.Specialists.SearchFor(s => s.Id.Equals(idGuid)).First();
+                    existingSpecialist.FirstName = firstName;
+                    existingSpecialist.MiddleName = middleName;
+                    existingSpecialist.LastName = lastName;
+                    existingSpecialist.SpecialtyId = specialtyGuid;
+                    existingSpecialist.TitleId = titleGuid;
+                    existingSpecialist.Uin = uin;
+                }
             }
         }
 
@@ -204,9 +264,9 @@
 
             foreach (var specialty in allSpecialties)
             {
-                var id = specialty["SpecialtyId"].ToString();
+                var id = this.GetValue(specialty, "SpecialtyId");
                 var idGuid = new Guid(id);
-                var specialtyName = specialty["Specialty"].ToString();
+                var specialtyName = this.GetValue(specialty, "Specialty");
 
                 var exists = this.data.Specialties.All()
                     .Where(s => s.Id.Equals(idGuid))
@@ -222,7 +282,23 @@
 
                     this.data.Specialties.Add(newSpecialty);
                 }
+                else
+                {
+                    var existingSpecialty = this.data.Specialties.SearchFor(s => s.Id.Equals(idGuid)).First();
+                    existingSpecialty.Speciality = specialtyName;
+                }
             }
+        }
+
+        private string GetValue(BsonDocument document, string key)
+        {
+            string value = string.Empty;
+            if (document.Contains(key))
+            {
+                value = document[key].AsString;
+            }
+
+            return value;
         }
     }
 }
