@@ -26,7 +26,7 @@
 
         private void ImportFromXmlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var importFromXml = new ImportFromXML();
+            var importFromXml = new ImportFromXml();
             importFromXml.ShowDialog();
         }
 

@@ -35,23 +35,22 @@
             this.importProgress = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
-            // Import
+            // import
             // 
             this.import.Location = new System.Drawing.Point(12, 12);
-            this.import.Name = "Import";
+            this.import.Name = "import";
             this.import.Size = new System.Drawing.Size(121, 23);
             this.import.TabIndex = 1;
             this.import.Text = "Import from Mongo";
             this.import.UseVisualStyleBackColor = true;
             this.import.Click += new System.EventHandler(this.ImportFromMongo_Click);
             // 
-            // ImportProgress
+            // importProgress
             // 
             this.importProgress.Location = new System.Drawing.Point(12, 41);
-            this.importProgress.Name = "ImportProgress";
+            this.importProgress.Name = "importProgress";
             this.importProgress.Size = new System.Drawing.Size(560, 23);
             this.importProgress.TabIndex = 2;
-            this.importProgress.Visible = false;
             // 
             // ImportFromMongoDB
             // 

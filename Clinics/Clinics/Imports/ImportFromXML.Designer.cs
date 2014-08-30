@@ -1,6 +1,6 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    public partial class ImportFromXML
+    public partial class ImportFromXml
     {
         /// <summary>
         /// Required designer variable.
@@ -9,6 +9,7 @@
         private System.Windows.Forms.Button browse;
         private System.Windows.Forms.Label fileName;
         private System.Windows.Forms.Button import;
+        private System.Windows.Forms.ProgressBar importProgress;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -35,45 +36,55 @@
             this.browse = new System.Windows.Forms.Button();
             this.fileName = new System.Windows.Forms.Label();
             this.import = new System.Windows.Forms.Button();
+            this.importProgress = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
-            // Browse
+            // browse
             // 
             this.browse.Location = new System.Drawing.Point(12, 12);
-            this.browse.Name = "Browse";
+            this.browse.Name = "browse";
             this.browse.Size = new System.Drawing.Size(75, 23);
             this.browse.TabIndex = 1;
             this.browse.Text = "Browse";
             this.browse.UseVisualStyleBackColor = true;
             this.browse.Click += new System.EventHandler(this.Browse_Click);
             // 
-            // FileName
+            // fileName
             // 
             this.fileName.AutoSize = true;
             this.fileName.Location = new System.Drawing.Point(93, 17);
-            this.fileName.Name = "FileName";
+            this.fileName.Name = "fileName";
             this.fileName.Size = new System.Drawing.Size(0, 13);
             this.fileName.TabIndex = 2;
             // 
-            // Import
+            // import
             // 
             this.import.Location = new System.Drawing.Point(12, 41);
-            this.import.Name = "Import";
+            this.import.Name = "import";
             this.import.Size = new System.Drawing.Size(75, 23);
             this.import.TabIndex = 3;
             this.import.Text = "Import";
             this.import.UseVisualStyleBackColor = true;
             this.import.Click += new System.EventHandler(this.Import_Click);
             // 
-            // ImportFromXML
+            // importProgress
+            // 
+            this.importProgress.Location = new System.Drawing.Point(12, 70);
+            this.importProgress.Name = "importProgress";
+            this.importProgress.Size = new System.Drawing.Size(560, 23);
+            this.importProgress.Step = 1;
+            this.importProgress.TabIndex = 4;
+            // 
+            // ImportFromXml
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
+            this.Controls.Add(this.importProgress);
             this.Controls.Add(this.import);
             this.Controls.Add(this.fileName);
             this.Controls.Add(this.browse);
-            this.Name = "ImportFromXML";
+            this.Name = "ImportFromXml";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Import from XML";
             this.ResumeLayout(false);

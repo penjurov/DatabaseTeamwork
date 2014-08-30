@@ -35,7 +35,6 @@
         {
             try
             {
-                this.importProgress.Visible = true;
                 this.importProgress.Value = 0;
                 this.importProgress.Maximum = NumberOfTables;
 
@@ -61,7 +60,6 @@
 
                 this.data.SaveChanges();
                 mongoServer.Disconnect();
-                this.importProgress.Visible = false;
             }
             catch (DbEntityValidationException ex)
             {
@@ -97,7 +95,7 @@
 
             foreach (var title in allTitles)
             {
-                var mongoId = title["TitleId"].ToString();
+                var mongoId = this.GetValue(title, "TitleId");
                 var idGuid = new Guid(mongoId);
 
                 string titleName = this.GetValue(title, "Title");

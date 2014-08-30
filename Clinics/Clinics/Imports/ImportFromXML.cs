@@ -9,7 +9,7 @@
     using MongoDB.Bson;
     using MongoDB.Driver;
        
-    public partial class ImportFromXML : Form
+    public partial class ImportFromXml : Form
     {
         private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";
         private static MongoUrl mongoUrl = new MongoUrl(MongoUri);
@@ -18,12 +18,17 @@
         private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
         private XmlDocument doc = new XmlDocument();
 
-        public ImportFromXML()
+        public ImportFromXml()
         {
             this.InitializeComponent();
         }
 
         private void Browse_Click(object sender, EventArgs e)
+        {
+            this.FileSelect();
+        }
+
+        private void FileSelect()
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
@@ -43,6 +48,11 @@
         }
 
         private void Import_Click(object sender, EventArgs e)
+        {           
+            this.Import();           
+        }
+
+        private void Import()
         {
             if (this.fileName.Text != string.Empty)
             {
@@ -50,12 +60,16 @@
                 XmlNode rootNode = this.doc.DocumentElement;
                 var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
 
+                this.importProgress.Visible = true;
+                this.importProgress.Value = 0;
+                this.importProgress.Maximum = rootNode.ChildNodes.Count - 1;
+
                 foreach (XmlNode node in rootNode.ChildNodes)
                 {
-                    var name = node["name"].InnerText;
-                    var price = decimal.Parse(node["price"].InnerText);
-                    var information = node["information"].InnerText;
-
+                    var name = this.GetValue(node, "name");
+                    var price = decimal.Parse(this.GetValue(node, "price"));
+                    var information = this.GetValue(node, "information");
+                    
                     var exist = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
 
                     if (exist == null)
@@ -70,12 +84,29 @@
 
                         procedures.Insert<Procedure>(procedure);
                     }
-                }
+
+                    if (this.importProgress.Value < this.importProgress.Maximum)
+                    {
+                        this.importProgress.Value++;
+                    }                   
+                }              
             }
             else
             {
                 MessageBox.Show("Please choose xml file!");
             }
+        }
+
+        private string GetValue(XmlNode node, string key)
+        {
+            string value = string.Empty;
+
+            if (node[key] != null)
+            {
+                value = node[key].InnerText;
+            }
+
+            return value;
         }
     }
 }
