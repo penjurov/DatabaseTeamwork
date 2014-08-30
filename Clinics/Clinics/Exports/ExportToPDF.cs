@@ -22,12 +22,12 @@
             int month = this.Month.SelectedIndex + 1;
             int year = int.Parse(this.Year.Text);
 
-            var db = new ClinicsDBContext();
-            var dbManipulations = db.Manipulations.Where(m => m.Date.Year == year && m.Date.Month == month);
-            var dbProcedures = db.Procedures.ToList();
-            var dbPatients = db.Patients.ToList();
-            var dbSpecialists = db.Specialists.ToList();
-            var dbTitles = db.Titles.ToList();
+            IClinicsData db = new ClinicsData();
+            var dbManipulations = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
+            var dbProcedures = db.Procedures.All().ToList();
+            var dbPatients = db.Patients.All().ToList();
+            var dbSpecialists = db.Specialists.All().ToList();
+            var dbTitles = db.Titles.All().ToList();
 
             Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 42, 35);
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream("../../Reports/test.pdf", FileMode.Create));
