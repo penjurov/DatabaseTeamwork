@@ -6,10 +6,10 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox Year;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox Month;
         private System.Windows.Forms.Button button1;
 
         /// <summary>
@@ -34,19 +34,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.Year = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.Month = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // textBox1
+            // Year
             // 
-            this.textBox1.Location = new System.Drawing.Point(136, 24);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 9;
+            this.Year.Location = new System.Drawing.Point(136, 24);
+            this.Year.Name = "Year";
+            this.Year.Size = new System.Drawing.Size(100, 20);
+            this.Year.TabIndex = 9;
             // 
             // label2
             // 
@@ -66,10 +66,10 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "Month";
             // 
-            // comboBox1
+            // Month
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.Month.FormattingEnabled = true;
+            this.Month.Items.AddRange(new object[] {
             "January",
             "February",
             "March",
@@ -82,10 +82,10 @@
             "October",
             "November",
             "December"});
-            this.comboBox1.Location = new System.Drawing.Point(12, 24);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(118, 21);
-            this.comboBox1.TabIndex = 6;
+            this.Month.Location = new System.Drawing.Point(12, 24);
+            this.Month.Name = "Month";
+            this.Month.Size = new System.Drawing.Size(118, 21);
+            this.Month.TabIndex = 6;
             // 
             // button1
             // 
@@ -95,17 +95,17 @@
             this.button1.TabIndex = 5;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.ExportToExcel_Click);
             // 
             // ExportToExcel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.Year);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.Month);
             this.Controls.Add(this.button1);
             this.Name = "ExportToExcel";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
