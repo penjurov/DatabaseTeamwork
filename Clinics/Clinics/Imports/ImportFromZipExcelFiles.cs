@@ -9,6 +9,7 @@
     using System.Windows.Forms;
     using Clinics.Data;
     using Clinics.Models;
+    using System.Globalization;
 
     public partial class ImportFromZipExcelFiles : Form
     {
@@ -115,6 +116,8 @@
                 }
 
                 this.data.SaveChanges();
+
+                MessageBox.Show("Data was successfully imported from Zip(Excel) to SQL Server!");
             }
             catch (Exception ex)
             {
@@ -143,7 +146,8 @@
                 PatientId = currentPatient.Id,
                 SpecialistId = specialist.Id,
                 ProcedureId = procedure.Id,
-                Date = DateTime.Parse(currentReportDate)
+                Date = DateTime.ParseExact(currentReportDate, "dd-MM-yyyy",  CultureInfo.InvariantCulture)
+                //Date = DateTime.Parse(currentReportDate)
             };
             return currentManipulation;
         }
