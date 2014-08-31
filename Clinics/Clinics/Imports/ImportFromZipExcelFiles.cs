@@ -71,11 +71,11 @@
                         foreach (DataRow row in excelData.Rows)
                         {
                             var patientNumber = row["PatientNumber"];
-                            var abreviature = row["Abreviature"];
+                            var abreviature = row["Abreviature"].ToString();
                             var age = row["Age"];
-                            var gender = row["Gender"];
+                            var gender = row["Gender"].ToString();
 
-                            var procedureName = row["Procedure"];
+                            var procedureName = row["Procedure"].ToString();
                             // var specialistFirstName = row["SpecialistFirstName"];
                             // var specialistLastName = row["SpecialistLastName"];
                             var specialistUIN = row["SpecialistUIN"];
@@ -84,9 +84,9 @@
                             {
                                 Id = Guid.NewGuid(),
                                 PatientNumber = new Guid(patientNumber.ToString()),
-                                Abreviature = (string)abreviature,
+                                Abreviature = abreviature,
                                 Age = (int)age,
-                                Gender = (string)gender
+                                Gender = gender
                             };
 
                             var specialistID = clinicsData
@@ -101,8 +101,8 @@
                             {
                                 Id = Guid.NewGuid(),
                                 PatientId = currentPatient.Id,
-                                SpecialistId = (Guid)specialistID,
-                                ProcedureId = (Guid)procedureID,
+                                SpecialistId = new Guid(specialistID.ToString()),
+                                ProcedureId = new Guid(procedureID.ToString()),
                                 Date = DateTime.Parse(currentReportDate)
                             };
 
