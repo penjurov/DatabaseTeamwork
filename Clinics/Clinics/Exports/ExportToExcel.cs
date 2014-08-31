@@ -10,6 +10,7 @@
     using System.IO;
     using OfficeOpenXml;
     using OfficeOpenXml.Table;
+    using System.Collections.Generic;
 
     // You are given a SQLite database holding more information for each product.
     // Write a program to read the MySQL database of reports, read the information from SQLite
@@ -24,32 +25,19 @@
 
         private void ExportToExcel_Click(object sender, EventArgs e)
         {
-            var procedures = ConnectToSQLite();
+            DataTable specialists = ReadFromMySql();
+            DataTable procedures = ReadFromSQLite();
 
-            var specialists = ConnectToMySQL();
+            var proceduresDict = ConvertToDict(procedures);
 
-            SaveDataToExcel(procedures);
+            DataTable stats = JoinTables(specialists, proceduresDict);
+
+            SaveDataToExcel(stats);
         }
 
-        private DataTable ConnectToSQLite()
+        private DataTable ReadFromSQLite()
         {
-            var dbSQLite = GetSQLiteConnection();
-            DataTable procedures = GetProcedures(dbSQLite);
-
-            var result = procedures
-                .AsEnumerable()
-                .Select(p => string.Format(
-                    "{0} ({1:#0.##%})",
-                    p.Field<string>("Name"),
-                    p.Field<double>("InsuranceCoverage")));
-
-            MessageBox.Show(string.Join(Environment.NewLine, result));
-
-            return procedures;
-        }
-
-        private DataTable GetProcedures(SQLiteConnection dbCon)
-        {
+            var dbCon = GetSQLiteConnection();
             dbCon.Open();
             using (dbCon)
             {
@@ -61,26 +49,9 @@
             }
         }
 
-        private DataTable ConnectToMySQL()
+        private DataTable ReadFromMySql()
         {
-            var dbMySql = GetMySqlConnection();
-            DataTable specialists = GetStats(dbMySql);
-
-            var result = specialists
-                .AsEnumerable()
-                .Select(p => string.Format(
-                    "{0} ({1}: {2})",
-                    p.Field<string>("Specialist"),
-                    p.Field<string>("Procedure"),
-                    p.Field<int>("ProcedureCount")));
-
-            MessageBox.Show(string.Join(Environment.NewLine, result));
-
-            return specialists;
-        }
-
-        private DataTable GetStats(MySqlConnection dbCon)
-        {
+            var dbCon = GetMySqlConnection();
             dbCon.Open();
             using (dbCon)
             {
@@ -90,6 +61,46 @@
                 adapter.Fill(dataSet);
                 return dataSet.Tables[0];
             }
+        }
+
+        private Dictionary<string, double> ConvertToDict(DataTable procedures)
+        {
+            var dict = new Dictionary<string, double>();
+            foreach (DataRow row in procedures.Rows)
+            {
+                string name = row["Name"].ToString();
+                double coverage = (double)row["InsuranceCoverage"];
+                dict[name] = coverage;
+            }
+
+            return dict;
+        }
+
+        private DataTable JoinTables(DataTable specialists, Dictionary<string, double> procedures)
+        {
+            // Create new table with 4 columns
+            DataTable joined = new DataTable();
+            joined.Columns.Add("Specialist", typeof(string));
+            joined.Columns.Add("Procedure", typeof(string));
+            joined.Columns.Add("ProcedureCount", typeof(int));
+            joined.Columns.Add("InsuranceCoverage", typeof(double));
+
+            foreach (var spec in specialists.AsEnumerable())
+            {
+                var procedureName = spec.Field<string>("Procedure");
+                joined.LoadDataRow(
+                    new object[]
+                    {
+                        spec.Field<string>("Specialist"),
+                        procedureName,
+                        spec.Field<int>("ProcedureCount"),
+                        procedures[procedureName]
+                    }, fAcceptChanges: false);
+            }
+
+            //PrintJoined(joined);
+
+            return joined;
         }
 
         private SQLiteConnection GetSQLiteConnection()
@@ -110,47 +121,23 @@
             return new OleDbConnection(connStr);
         }
 
+        // Using http://epplus.codeplex.com/
         private void SaveDataToExcel(DataTable dataTable)
         {
-            //DataTable dataTable = GenerateDataTableWithRecords();
-
-            string sheetName = "statsTable";
             string fileName = "stats";
+            string fileNameWithDate = string.Format("{0}_{1}.xlsx", fileName, DateTime.Now.ToString("dd-MM-yyyy"));
+            string fileNameWithPath = @"..\..\..\Output\" + fileNameWithDate;
 
-            GenerateExcel(dataTable, sheetName, fileName);
-        }        
-        
-        // Creates a DataTable with dummy data.
-        private DataTable GenerateDataTableWithRecords()
-        {
-            var dtEmployee = new DataTable();
+            // Delete existing file with same file name.
+            if (File.Exists(fileNameWithPath))
+                File.Delete(fileNameWithPath);
 
-            dtEmployee.Columns.Add("EmployeeID", typeof(int));
-            dtEmployee.Columns.Add("EmployeeName", typeof(string));
-            dtEmployee.Columns.Add("Designation", typeof(string));
-
-            dtEmployee.Rows.Add(1, "Bytes Of Code", "C# developer");
-            dtEmployee.Rows.Add(2, "RAJ", "Software Engineer");
-            dtEmployee.Rows.Add(3, "Vicky", "Student");
-            dtEmployee.Rows.Add(4, "Me", "Programmer");
-
-            return dtEmployee;
+            GenerateExcel(dataTable, sheetName: "Joined", fileName: fileNameWithPath);
         }
 
         private void GenerateExcel(DataTable dataTable, string sheetName, string fileName)
         {
-            string fileNameWithDate = string.Format("{0}_{1}", fileName, DateTime.Now.ToString("dd-MM-yyyy"));
-            //string finalFileNameWithPath = string.Format("{0}\\{1}.xlsx", Environment.CurrentDirectory, fileNameWithDate);
-
-            string finalFileNameWithPath = @"..\..\..\Output\" + fileNameWithDate + ".xlsx";
-
-            
-
-            //Delete existing file with same file name.
-            if (File.Exists(finalFileNameWithPath))
-                File.Delete(finalFileNameWithPath);
-
-            var newFile = new FileInfo(finalFileNameWithPath);
+            var newFile = new FileInfo(fileName);
 
             //Step 1 : Create object of ExcelPackage class and pass file path to constructor.
             using (var package = new ExcelPackage(newFile))
@@ -170,6 +157,20 @@
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
+        }
+
+        private static void PrintJoined(DataTable joined)
+        {
+            var result = joined
+                .AsEnumerable()
+                .Select(p => string.Format(
+                    "{0} ({1}: {2}, {3})",
+                    p.Field<string>("Specialist"),
+                    p.Field<string>("Procedure"),
+                    p.Field<int>("ProcedureCount"),
+                    p.Field<double>("InsuranceCoverage")));
+
+            MessageBox.Show(string.Join(Environment.NewLine, result));
         }
     }
 }
