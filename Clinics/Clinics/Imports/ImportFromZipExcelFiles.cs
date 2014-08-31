@@ -1,151 +1,180 @@
 ﻿namespace ClinicsProgram.Imports
 {
-    using Clinics.Models;
     using System;
     using System.Data;
     using System.Data.OleDb;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using System.Windows.Forms;
     using Clinics.Data;
-    using System.Linq;
+    using Clinics.Models;
 
     public partial class ImportFromZipExcelFiles : Form
     {
+        private const string Filter = "zip files (*.zip)|*.zip";
+        private const string TempFileName = "clinicImport.xlsx";
+        private const string TempFolderName = @"\extracted\";
+        private const string ExcelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source = {0}; Extended Properties=\"Excel 12.0;HDR=YES\"";
+        private IClinicsData data = new ClinicsData();
+
         public ImportFromZipExcelFiles()
         {
             this.InitializeComponent();
         }
 
-        private void BtnBrowseZipFile_Click(object sender, EventArgs e)
+        private void Browse_Click(object sender, EventArgs e)
         {
-            DialogResult result = fileDialogBrowseZipFile.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                string filePath = fileDialogBrowseZipFile.FileName;
+            this.FileSelect();
+        }
 
-                if (IsFileInCorrectFormat("zip", filePath))
+        private void FileSelect()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = Filter;
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
                 {
-                    txtBoxImportFilePath.Text = filePath;
+                    this.fileName.Text = ofd.FileName;
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("Incorrect file format! Please select {0} file.", "zip"));
+                    MessageBox.Show(ex.Message);
                 }
             }
         }
 
-        private bool IsFileInCorrectFormat(string fileFormat, string filePath)
+        private void Import_Click(object sender, EventArgs e)
         {
-            if (filePath.EndsWith(fileFormat, true, System.Globalization.CultureInfo.InvariantCulture))
-            {
-                return true;
-            }
-
-            return false;
+            this.Import();
         }
 
-        private void BtnImport_Click(object sender, EventArgs e)
+        private void Import()
         {
-            string zipPath = @"C:\Users\Tihomir\Desktop\test.zip";
-            string extractPath = @"C:\Users\Tihomir\Desktop\extracted\";
-            string tempExtractedFile = "temp.xlsx";
-            string currentReportDate = string.Empty;
-
-            ClinicsData clinicsData = new ClinicsData();
-
-            using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+            try
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                string zipPath = this.fileName.Text;
+                string tempFolder = Directory.GetCurrentDirectory() + TempFolderName;
+                string currentReportDate = string.Empty;
+                ZipArchive archive = ZipFile.OpenRead(zipPath);
+
+                this.importProgress.Value = 0;
+                this.importProgress.Maximum = archive.Entries.Count;
+
+                using (archive)
                 {
-                    if (entry.FullName.EndsWith("/"))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        currentReportDate = entry.FullName.TrimEnd('/');
-                    }
-                    else
-                    {
-                        entry.ExtractToFile(Path.Combine(extractPath, tempExtractedFile), true);
-
-                        DataTable excelData = ReadExcelData(extractPath + tempExtractedFile);
-
-                        foreach (DataRow row in excelData.Rows)
+                        if (entry.FullName.EndsWith("/"))
                         {
-                            var patientNumber = row["PatientNumber"];
-                            var abreviature = row["Abreviature"].ToString();
-                            var age = row["Age"];
-                            var gender = row["Gender"].ToString();
-
-                            var procedureName = row["Procedure"].ToString();
-                            // var specialistFirstName = row["SpecialistFirstName"];
-                            // var specialistLastName = row["SpecialistLastName"];
-                            var specialistUIN = row["SpecialistUIN"];
-
-                            Patient currentPatient = new Patient()
+                            currentReportDate = entry.FullName.TrimEnd('/');
+                        }
+                        else
+                        {
+                            if (!Directory.Exists(tempFolder))
                             {
-                                Id = Guid.NewGuid(),
-                                PatientNumber = new Guid(patientNumber.ToString()),
-                                Abreviature = abreviature,
-                                Age = (int)age,
-                                Gender = gender
-                            };
+                                Directory.CreateDirectory(tempFolder);
+                            }
+                            
+                            entry.ExtractToFile(Path.Combine(tempFolder, TempFileName), true);
 
-                            var specialistID = clinicsData
-                                .Specialists
-                                .SearchFor(s => s.Uin == specialistUIN);
+                            DataTable excelData = this.ReadExcelData(tempFolder + TempFileName);
 
-                            var procedureID = clinicsData
-                                .Procedures
-                                .SearchFor(pr => pr.Name == procedureName);
-
-                            Manipulation currentManipulation = new Manipulation()
+                            foreach (DataRow row in excelData.Rows)
                             {
-                                Id = Guid.NewGuid(),
-                                PatientId = currentPatient.Id,
-                                SpecialistId = new Guid(specialistID.ToString()),
-                                ProcedureId = new Guid(procedureID.ToString()),
-                                Date = DateTime.Parse(currentReportDate)
-                            };
+                                var patientNumber = row["PatientNumber"].ToString();
 
-                            clinicsData.Patients.Add(currentPatient);
+                                if (patientNumber != string.Empty)
+                                {
+                                    var patient = this.data
+                                        .Patients.All()
+                                        .Where(p => p.PatientNumber == patientNumber)
+                                        .FirstOrDefault();
 
-                            clinicsData.SaveChanges();
+                                    if (patient == null)
+                                    {
+                                        patient = this.CreateNewPatient(row);
+                                        this.data.Patients.Add(patient);
+                                    }
 
-                            clinicsData.Patients
-                                .SearchFor(p => p.Id == currentPatient.Id)
-                                .First()
-                                .Manipulations
-                                .Add(currentManipulation);
+                                    Manipulation currentManipulation = this.CreateNewManipulation(currentReportDate, row, patient);
 
-                            clinicsData.SaveChanges();
+                                    patient.Manipulations.Add(currentManipulation);  
+                                }                          
+                            }
+                        }
+
+                        if (this.importProgress.Value < this.importProgress.Maximum)
+                        {
+                            this.importProgress.Value++;
                         }
                     }
                 }
-            }
-        }
 
-        private DataTable ReadExcelData(string filePath)
-        {
-            OleDbConnection dbConn = new OleDbConnection();
-            DataTable dt = new DataTable();
-
-            try
-            {
-                dbConn.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source = " +
-                                                                    filePath + "; Extended Properties=\"Excel 12.0;HDR=YES\"";
-                dbConn.Open();
-
-                OleDbCommand dbCommand = new OleDbCommand("SELECT * FROM [Sheet1$]", dbConn);
-
-                dbConn.Close();
-
-                OleDbDataAdapter dbAdapter = new OleDbDataAdapter();
-                dbAdapter.SelectCommand = dbCommand;
-                dbAdapter.Fill(dt);
+                this.data.SaveChanges();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
+            }          
+        }
+
+        private Manipulation CreateNewManipulation(string currentReportDate, DataRow row, Patient currentPatient)
+        {
+            var procedureName = row["Procedure"].ToString();
+            var specialistUin = row["SpecialistUIN"].ToString();
+
+            var specialist = this.data
+                .Specialists.All()
+                .Where(s => s.Uin == specialistUin)
+                .FirstOrDefault();
+
+            var procedure = this.data
+                .Procedures.All()
+                .Where(pr => pr.Name == procedureName)
+                .FirstOrDefault();
+
+            Manipulation currentManipulation = new Manipulation()
+            {
+                Id = Guid.NewGuid(),
+                PatientId = currentPatient.Id,
+                SpecialistId = specialist.Id,
+                ProcedureId = procedure.Id,
+                Date = DateTime.Parse(currentReportDate)
+            };
+            return currentManipulation;
+        }
+
+        private Patient CreateNewPatient(DataRow row)
+        {
+            var patientNumber = row["PatientNumber"].ToString();
+            var abreviature = row["Abreviature"].ToString();
+            var age = row["Age"].ToString();
+            var gender = row["Gender"].ToString();
+
+            Patient currentPatient = new Patient()
+            {
+                Id = Guid.NewGuid(),
+                PatientNumber = patientNumber,
+                Abreviature = abreviature,
+                Age = int.Parse(age),
+                Gender = gender
+            };
+            return currentPatient;
+        }
+
+        private DataTable ReadExcelData(string filePath)
+        {
+            OleDbConnection excelConnection = new OleDbConnection(string.Format(ExcelConnectionString, filePath));
+            DataTable dt = new DataTable();
+            
+            excelConnection.Open();
+            OleDbDataAdapter da = new System.Data.OleDb.OleDbDataAdapter("select * from [SHEET1$]", excelConnection);
+            da.Fill(dt);
+            excelConnection.Close();
 
             return dt;
         }

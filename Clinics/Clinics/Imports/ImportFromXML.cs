@@ -1,7 +1,6 @@
 ﻿namespace ClinicsProgram.Imports
 {
     using System;
-    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
     using System.Xml;
@@ -64,7 +63,6 @@
                     XmlNode rootNode = this.doc.DocumentElement;
                     var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
 
-                    this.importProgress.Visible = true;
                     this.importProgress.Value = 0;
                     this.importProgress.Maximum = rootNode.ChildNodes.Count - 1;
 

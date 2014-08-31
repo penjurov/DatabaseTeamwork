@@ -13,7 +13,7 @@
     
         public System.Guid Id { get; set; }
 
-        public System.Guid PatientNumber { get; set; }
+        public string PatientNumber { get; set; }
 
         public string Abreviature { get; set; }
 
