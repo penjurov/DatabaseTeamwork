@@ -1,7 +1,6 @@
 ﻿namespace ClinicsProgram.Imports
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Entity.Validation;
     using System.Linq;
     using System.Windows.Forms;
@@ -71,22 +70,10 @@
                 var exceptionMessage = string.Concat(ex.Message, " The validation errors are: ", fullErrorMessage);
                 throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);  
             }
-            catch (MongoConnectionException er)
+            catch (Exception ex)
             {
-                MessageBox.Show(er.Message);
-            }          
-            catch (MongoAuthenticationException er)
-            {
-                MessageBox.Show(er.Message);
+                MessageBox.Show(ex.Message);
             }
-            catch (MongoQueryException er)
-            {
-                MessageBox.Show(er.Message);
-            }
-            catch (MongoException er)
-            {
-                MessageBox.Show(er.Message);
-            }          
         }
 
         private void ImportTitles(MongoCollection<BsonDocument> titles)
@@ -97,14 +84,13 @@
             {
                 var mongoId = this.GetValue(title, "TitleId");
                 var idGuid = new Guid(mongoId);
-
                 string titleName = this.GetValue(title, "Title");
 
-                var exists = this.data.Titles.All()
+                var existingRecord = this.data.Titles.All()
                     .Where(t => t.Id.Equals(idGuid))
                     .FirstOrDefault();
 
-                if (exists == null)
+                if (existingRecord == null)
                 {
                     Title newTitle = new Title
                     {
@@ -116,8 +102,7 @@
                 }
                 else
                 {
-                    var existingTitles = this.data.Titles.SearchFor(t => t.Id.Equals(idGuid)).First();
-                    existingTitles.TitleName = titleName;
+                    existingRecord.TitleName = titleName;
                 }
             }
         }
@@ -138,11 +123,11 @@
                 var chieff = this.GetValue(clinic, "ClinicChiefId");
                 var chieffdGuid = new Guid(chieff);
 
-                var exists = this.data.Clinics.All()
+                var existingRecord = this.data.Clinics.All()
                     .Where(c => c.Id.Equals(idGuid))
                     .FirstOrDefault();
 
-                if (exists == null)
+                if (existingRecord == null)
                 {
                     Clinic newClinic = new Clinic
                     {
@@ -157,11 +142,10 @@
                 }
                 else
                 {
-                    var existingClinic = this.data.Clinics.SearchFor(p => p.Id.Equals(idGuid)).First();
-                    existingClinic.ClinicName = name;
-                    existingClinic.ClinicAddress = address;
-                    existingClinic.ClinicPhones = phones;
-                    existingClinic.ClinicChiefId = chieffdGuid;
+                    existingRecord.ClinicName = name;
+                    existingRecord.ClinicAddress = address;
+                    existingRecord.ClinicPhones = phones;
+                    existingRecord.ClinicChiefId = chieffdGuid;
                 }
             }
         }
@@ -177,11 +161,11 @@
                 var price = decimal.Parse(this.GetValue(procedure, "Price"));
                 var information = this.GetValue(procedure, "Information");
 
-                var exists = this.data.Procedures.All()
+                var existingRecord = this.data.Procedures.All()
                     .Where(p => p.Id.Equals(idGuid))
                     .FirstOrDefault();
 
-                if (exists == null)
+                if (existingRecord == null)
                 {
                     Procedure newProcedure = new Procedure
                     {
@@ -195,10 +179,9 @@
                 }
                 else
                 {
-                    var existingProcedure = this.data.Procedures.SearchFor(p => p.Id.Equals(idGuid)).First();
-                    existingProcedure.Name = name;
-                    existingProcedure.Price = price;
-                    existingProcedure.Information = information;
+                    existingRecord.Name = name;
+                    existingRecord.Price = price;
+                    existingRecord.Information = information;
                 }
             }
         }
@@ -224,11 +207,11 @@
 
                 var uin = this.GetValue(specialist, "Uin");
 
-                var exists = this.data.Specialists.All()
+                var existingRecord = this.data.Specialists.All()
                     .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
-                if (exists == null)
+                if (existingRecord == null)
                 {
                     Specialist newSpecialist = new Specialist
                     {
@@ -245,13 +228,12 @@
                 }
                 else
                 {
-                    var existingSpecialist = this.data.Specialists.SearchFor(s => s.Id.Equals(idGuid)).First();
-                    existingSpecialist.FirstName = firstName;
-                    existingSpecialist.MiddleName = middleName;
-                    existingSpecialist.LastName = lastName;
-                    existingSpecialist.SpecialtyId = specialtyGuid;
-                    existingSpecialist.TitleId = titleGuid;
-                    existingSpecialist.Uin = uin;
+                    existingRecord.FirstName = firstName;
+                    existingRecord.MiddleName = middleName;
+                    existingRecord.LastName = lastName;
+                    existingRecord.SpecialtyId = specialtyGuid;
+                    existingRecord.TitleId = titleGuid;
+                    existingRecord.Uin = uin;
                 }
             }
         }
@@ -266,11 +248,11 @@
                 var idGuid = new Guid(id);
                 var specialtyName = this.GetValue(specialty, "Specialty");
 
-                var exists = this.data.Specialties.All()
+                var existingRecord = this.data.Specialties.All()
                     .Where(s => s.Id.Equals(idGuid))
                     .FirstOrDefault();
 
-                if (exists == null)
+                if (existingRecord == null)
                 {
                     Specialty newSpecialty = new Specialty
                     {
@@ -282,8 +264,7 @@
                 }
                 else
                 {
-                    var existingSpecialty = this.data.Specialties.SearchFor(s => s.Id.Equals(idGuid)).First();
-                    existingSpecialty.Speciality = specialtyName;
+                    existingRecord.Speciality = specialtyName;
                 }
             }
         }
