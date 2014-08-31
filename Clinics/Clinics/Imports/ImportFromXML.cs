@@ -1,6 +1,7 @@
 ﻿namespace ClinicsProgram.Imports
 {
     using System;
+    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
     using System.Xml;
@@ -12,6 +13,7 @@
     public partial class ImportFromXml : Form
     {
         private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";
+        private const string Filter = "xml files (*.xml)|*.xml";
         private static MongoUrl mongoUrl = new MongoUrl(MongoUri);
         private static MongoClient mongoClient = new MongoClient(mongoUrl);
         private static MongoServer mongoServer = mongoClient.GetServer();
@@ -32,17 +34,17 @@
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
-            ofd.Filter = "xml files (*.xml)|*.xml";
+            ofd.Filter = Filter;
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     this.fileName.Text = ofd.FileName;
-                }
+                }     
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                    MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -54,47 +56,54 @@
 
         private void Import()
         {
-            if (this.fileName.Text != string.Empty)
+            try
             {
-                this.doc.Load(this.fileName.Text);
-                XmlNode rootNode = this.doc.DocumentElement;
-                var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-
-                this.importProgress.Visible = true;
-                this.importProgress.Value = 0;
-                this.importProgress.Maximum = rootNode.ChildNodes.Count - 1;
-
-                foreach (XmlNode node in rootNode.ChildNodes)
+                if (this.fileName.Text != string.Empty)
                 {
-                    var name = this.GetValue(node, "name");
-                    var price = decimal.Parse(this.GetValue(node, "price"));
-                    var information = this.GetValue(node, "information");
-                    
-                    var exist = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
+                    this.doc.Load(this.fileName.Text);
+                    XmlNode rootNode = this.doc.DocumentElement;
+                    var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
 
-                    if (exist == null)
+                    this.importProgress.Visible = true;
+                    this.importProgress.Value = 0;
+                    this.importProgress.Maximum = rootNode.ChildNodes.Count - 1;
+
+                    foreach (XmlNode node in rootNode.ChildNodes)
                     {
-                        Procedure procedure = new Procedure
+                        var name = this.GetValue(node, "name");
+                        var price = decimal.Parse(this.GetValue(node, "price"));
+                        var information = this.GetValue(node, "information");
+
+                        var exist = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
+
+                        if (exist == null)
                         {
-                            Id = Guid.NewGuid(),
-                            Name = name,
-                            Price = price,
-                            Information = information
-                        };
+                            Procedure procedure = new Procedure
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = name,
+                                Price = price,
+                                Information = information
+                            };
 
-                        procedures.Insert<Procedure>(procedure);
+                            procedures.Insert<Procedure>(procedure);
+                        }
+
+                        if (this.importProgress.Value < this.importProgress.Maximum)
+                        {
+                            this.importProgress.Value++;
+                        }
                     }
-
-                    if (this.importProgress.Value < this.importProgress.Maximum)
-                    {
-                        this.importProgress.Value++;
-                    }                   
-                }              
+                }
+                else
+                {
+                    MessageBox.Show("Please choose xml file!");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Please choose xml file!");
-            }
+                MessageBox.Show(ex.Message);
+            }           
         }
 
         private string GetValue(XmlNode node, string key)
