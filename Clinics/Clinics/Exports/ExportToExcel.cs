@@ -18,7 +18,7 @@
         {
             ConnectToSQLite();
 
-            // Connect to MySQL
+            ConnectToMySQL();
         }
 
         private static void ConnectToSQLite()
@@ -43,6 +43,35 @@
             {
                 var dataSet = new DataSet();
                 var adapter = new SQLiteDataAdapter("SELECT Name, InsuranceCoverage FROM Procedures", dbCon);
+
+                adapter.Fill(dataSet);
+                return dataSet.Tables[0];
+            }
+        }
+
+        private void ConnectToMySQL()
+        {
+            var dbMySql = GetMySqlConnection();
+            DataTable specialists = GetStats(dbMySql);
+
+            var result = specialists
+                .AsEnumerable()
+                .Select(p => string.Format(
+                    "{0} ({1}: {2})",
+                    p.Field<string>("Specialist"),
+                    p.Field<string>("Procedure"),
+                    p.Field<int>("ProcedureCount")));
+
+            MessageBox.Show(string.Join(Environment.NewLine, result));
+        }
+
+        private DataTable GetStats(MySqlConnection dbCon)
+        {
+            dbCon.Open();
+            using (dbCon)
+            {
+                var dataSet = new DataSet();
+                var adapter = new MySqlDataAdapter("SELECT * FROM SpecialistStatistics", dbCon);
 
                 adapter.Fill(dataSet);
                 return dataSet.Tables[0];
