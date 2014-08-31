@@ -6,11 +6,9 @@
     using System.Configuration;
     using System.Data.SQLite;
     using System.Data;
-    using System.Data.OleDb;
     using System.IO;
     using OfficeOpenXml;
     using OfficeOpenXml.Table;
-    using System.Collections.Generic;
 
     // You are given a SQLite database holding more information for each product.
     // Write a program to read the MySQL database of reports, read the information from SQLite
@@ -28,25 +26,13 @@
             DataTable specialists = ReadFromMySql();
             DataTable procedures = ReadFromSQLite();
 
-            var proceduresDict = ConvertToDict(procedures);
+            DataTable joined = JoinDataTables(
+                specialists, procedures, "Name",
+                (s, p) => s.Field<string>("Procedure") == p.Field<string>("Name"));
 
-            DataTable stats = JoinTables(specialists, proceduresDict);
+            //PrintJoined(joined);
 
-            SaveDataToExcel(stats);
-        }
-
-        private DataTable ReadFromSQLite()
-        {
-            var dbCon = GetSQLiteConnection();
-            dbCon.Open();
-            using (dbCon)
-            {
-                var dataSet = new DataSet();
-                var adapter = new SQLiteDataAdapter("SELECT Name, InsuranceCoverage FROM Procedures", dbCon);
-
-                adapter.Fill(dataSet);
-                return dataSet.Tables[0];
-            }
+            SaveDataToExcel(joined);
         }
 
         private DataTable ReadFromMySql()
@@ -63,50 +49,18 @@
             }
         }
 
-        private Dictionary<string, double> ConvertToDict(DataTable procedures)
+        private DataTable ReadFromSQLite()
         {
-            var dict = new Dictionary<string, double>();
-            foreach (DataRow row in procedures.Rows)
+            var dbCon = GetSQLiteConnection();
+            dbCon.Open();
+            using (dbCon)
             {
-                string name = row["Name"].ToString();
-                double coverage = (double)row["InsuranceCoverage"];
-                dict[name] = coverage;
+                var dataSet = new DataSet();
+                var adapter = new SQLiteDataAdapter("SELECT Name, InsuranceCoverage FROM Procedures", dbCon);
+
+                adapter.Fill(dataSet);
+                return dataSet.Tables[0];
             }
-
-            return dict;
-        }
-
-        private DataTable JoinTables(DataTable specialists, Dictionary<string, double> procedures)
-        {
-            // Create new table with 4 columns
-            DataTable joined = new DataTable();
-            joined.Columns.Add("Specialist", typeof(string));
-            joined.Columns.Add("Procedure", typeof(string));
-            joined.Columns.Add("ProcedureCount", typeof(int));
-            joined.Columns.Add("InsuranceCoverage", typeof(double));
-
-            foreach (var spec in specialists.AsEnumerable())
-            {
-                var procedureName = spec.Field<string>("Procedure");
-                joined.LoadDataRow(
-                    new object[]
-                    {
-                        spec.Field<string>("Specialist"),
-                        procedureName,
-                        spec.Field<int>("ProcedureCount"),
-                        procedures[procedureName]
-                    }, fAcceptChanges: false);
-            }
-
-            //PrintJoined(joined);
-
-            return joined;
-        }
-
-        private SQLiteConnection GetSQLiteConnection()
-        {
-            string connStr = ConfigurationManager.ConnectionStrings["ClinicsSQLite"].ConnectionString;
-            return new SQLiteConnection(connStr);
         }
 
         private MySqlConnection GetMySqlConnection()
@@ -115,10 +69,10 @@
             return new MySqlConnection(connStr);
         }
 
-        private OleDbConnection GetExcelConnection()
+        private SQLiteConnection GetSQLiteConnection()
         {
-            string connStr = ConfigurationManager.ConnectionStrings["ClinicsExcel"].ConnectionString;
-            return new OleDbConnection(connStr);
+            string connStr = ConfigurationManager.ConnectionStrings["ClinicsSQLite"].ConnectionString;
+            return new SQLiteConnection(connStr);
         }
 
         // Using http://epplus.codeplex.com/
@@ -148,7 +102,7 @@
                 //Step 3 : Start loading datatable form A1 cell of worksheet.
                 worksheet.Cells["A1"].LoadFromDataTable(dataTable, true, TableStyles.None);
 
-                //Step 5 : Save all changes to ExcelPackage object which will create Excel 2007 file.
+                //Step 4 : Save all changes to ExcelPackage object which will create Excel 2007 file.
                 package.Save();
 
                 MessageBox.Show(
@@ -157,6 +111,47 @@
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
+        }
+
+        private DataTable JoinDataTables(DataTable t1, DataTable t2, string joinCol, params Func<DataRow, DataRow, bool>[] joinOn)
+        {
+            DataTable result = new DataTable();
+            foreach (DataColumn col in t1.Columns)
+            {
+                if (result.Columns[col.ColumnName] == null)
+                    result.Columns.Add(col.ColumnName, col.DataType);
+            }
+            foreach (DataColumn col in t2.Columns)
+            {
+                if (result.Columns[col.ColumnName] == null && col.ColumnName != joinCol)
+                    result.Columns.Add(col.ColumnName, col.DataType);
+            }
+            foreach (DataRow row1 in t1.Rows)
+            {
+                var joinRows = t2.AsEnumerable().Where(row2 =>
+                {
+                    foreach (var parameter in joinOn)
+                    {
+                        if (!parameter(row1, row2)) return false;
+                    }
+                    return true;
+                });
+                foreach (DataRow fromRow in joinRows)
+                {
+                    DataRow insertRow = result.NewRow();
+                    foreach (DataColumn col1 in t1.Columns)
+                    {
+                        insertRow[col1.ColumnName] = row1[col1.ColumnName];
+                    }
+                    foreach (DataColumn col2 in t2.Columns)
+                    {
+                        if (col2.ColumnName != joinCol)
+                            insertRow[col2.ColumnName] = fromRow[col2.ColumnName];
+                    }
+                    result.Rows.Add(insertRow);
+                }
+            }
+            return result;
         }
 
         private static void PrintJoined(DataTable joined)
