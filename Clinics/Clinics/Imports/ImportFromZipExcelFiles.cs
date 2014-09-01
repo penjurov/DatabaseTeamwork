@@ -116,8 +116,6 @@
                 }
 
                 this.data.SaveChanges();
-
-                MessageBox.Show("Data was successfully imported from Zip(Excel) to SQL Server!");
             }
             catch (Exception ex)
             {
@@ -147,7 +145,6 @@
                 SpecialistId = specialist.Id,
                 ProcedureId = procedure.Id,
                 Date = DateTime.ParseExact(currentReportDate, "dd-MM-yyyy",  CultureInfo.InvariantCulture)
-                //Date = DateTime.Parse(currentReportDate)
             };
             return currentManipulation;
         }
