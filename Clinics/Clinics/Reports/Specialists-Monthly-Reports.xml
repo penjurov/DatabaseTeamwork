@@ -1,32 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<reports>
-  <specialist name="Petrov">
-    <day date="8/25/2014">
-      <expense>180.00</expense>
-      <manipulations>3</manipulations>
-    </day>
-  </specialist>
-  <specialist name="Ivanov">
-    <day date="8/25/2014">
-      <expense>525.00</expense>
-      <manipulations>3</manipulations>
-    </day>
-  </specialist>
-  <specialist name="Dimov">
+<reports period="August-2014">
+  <specialist firstName="Martin" lastName="Dimov">
     <day date="8/26/2014">
       <expense>295.00</expense>
       <manipulations>3</manipulations>
     </day>
   </specialist>
-  <specialist name="Martinova">
+  <specialist firstName="Petar" lastName="Gospodinov">
+    <day date="8/27/2014">
+      <expense>900.00</expense>
+      <manipulations>4</manipulations>
+    </day>
+  </specialist>
+  <specialist firstName="Iliya" lastName="Ivanov">
+    <day date="8/25/2014">
+      <expense>525.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist firstName="Spas" lastName="Ivanov">
+    <day date="8/27/2014">
+      <expense>160.00</expense>
+      <manipulations>4</manipulations>
+    </day>
     <day date="8/28/2014">
-      <expense>230.00</expense>
-      <manipulations>2</manipulations>
+      <expense>160.00</expense>
+      <manipulations>4</manipulations>
     </day>
-    <day date="8/31/2014">
-      <expense>115.00</expense>
-      <manipulations>1</manipulations>
+    <day date="8/30/2014">
+      <expense>200.00</expense>
+      <manipulations>5</manipulations>
     </day>
+  </specialist>
+  <specialist firstName="George" lastName="Makedonski">
+    <day date="8/29/2014">
+      <expense>54.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist firstName="Iva" lastName="Martinova">
     <day date="8/25/2014">
       <expense>115.00</expense>
       <manipulations>1</manipulations>
@@ -35,45 +47,33 @@
       <expense>115.00</expense>
       <manipulations>1</manipulations>
     </day>
+    <day date="8/28/2014">
+      <expense>230.00</expense>
+      <manipulations>2</manipulations>
+    </day>
     <day date="8/30/2014">
       <expense>115.00</expense>
       <manipulations>1</manipulations>
     </day>
-  </specialist>
-  <specialist name="Gospodinov">
-    <day date="8/27/2014">
-      <expense>900.00</expense>
-      <manipulations>4</manipulations>
+    <day date="8/31/2014">
+      <expense>115.00</expense>
+      <manipulations>1</manipulations>
     </day>
   </specialist>
-  <specialist name="Ivanov">
-    <day date="8/30/2014">
-      <expense>200.00</expense>
-      <manipulations>5</manipulations>
-    </day>
-    <day date="8/28/2014">
-      <expense>160.00</expense>
-      <manipulations>4</manipulations>
-    </day>
-    <day date="8/27/2014">
-      <expense>160.00</expense>
-      <manipulations>4</manipulations>
-    </day>
-  </specialist>
-  <specialist name="Makedonski">
-    <day date="8/29/2014">
-      <expense>54.00</expense>
+  <specialist firstName="Nadia" lastName="Milanova">
+    <day date="8/31/2014">
+      <expense>180.00</expense>
       <manipulations>3</manipulations>
     </day>
   </specialist>
-  <specialist name="Petrov">
+  <specialist firstName="Emil" lastName="Petrov">
     <day date="8/29/2014">
       <expense>176.00</expense>
       <manipulations>2</manipulations>
     </day>
   </specialist>
-  <specialist name="Milanova">
-    <day date="8/31/2014">
+  <specialist firstName="Ivan" lastName="Petrov">
+    <day date="8/25/2014">
       <expense>180.00</expense>
       <manipulations>3</manipulations>
     </day>

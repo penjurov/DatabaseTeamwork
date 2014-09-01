@@ -4,8 +4,8 @@
     using System;
     using System.Windows.Forms;
     using System.Linq;
-    using System.Collections.Generic;
     using System.Xml.Linq;
+    using System.Globalization;
 
     public partial class ExportToXML : Form
     {
@@ -32,19 +32,20 @@
 
         private XElement GenerateReportXML(int year, int month)
         {
-            //    <specialists>
-            //      <specialist name="Nakov">
-            //        <day date="8/28/2014">
-            //          <expense>12365.01</expense>
-            //          <manipulations>6</manipulations>
-            //        </day>
-            //      </specialist>
-            //    </specialists>            
+            //  <reports period="August-2014">
+            //    <specialist firstName="Ivan" lastName="Petrov">
+            //      <day date="8/25/2014">
+            //        <expense>180.00</expense>
+            //        <manipulations>3</manipulations>
+            //      </day>
+            //    </specialist>
+            //  </reports>       
 
-            var root = new XElement("reports");
+            string monthStr = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
+            var root = new XElement("reports", new XAttribute("period", monthStr + "-" + year));
 
             var db = new ClinicsData();
-            foreach (var specialist in db.Specialists.All())
+            foreach (var specialist in db.Specialists.All().OrderBy(s => s.LastName).ThenBy(s => s.FirstName))
             {
                 var days = specialist
                     .Manupulations
@@ -55,6 +56,7 @@
                         manipulations = gr.Count(),
                         expense = gr.Sum(m => m.Procedure.Price)
                     })
+                    .OrderBy(date => date.Key)
                     .Select(date => new XElement(
                         "day",
                         new XAttribute("date", date.Key.ToShortDateString()),
@@ -64,7 +66,8 @@
 
                 var specialistXML = new XElement(
                     "specialist",
-                    new XAttribute("name", specialist.LastName),
+                    new XAttribute("firstName", specialist.FirstName),
+                    new XAttribute("lastName", specialist.LastName),
                     days);
 
                 root.Add(specialistXML);
