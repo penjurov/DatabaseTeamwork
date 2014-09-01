@@ -53,7 +53,7 @@
         private void CreateTableHeader(Document doc, int month, int year)
         {
             PdfPTable tableHeader = new PdfPTable(5);
-            PdfPCell cellHeaderDate = new PdfPCell(new Phrase("Date: " + month + "-" + year));
+            PdfPCell cellHeaderDate = new PdfPCell(new Phrase("Date: " + this.Month.Text + "-" + year));
             cellHeaderDate.BackgroundColor = new BaseColor(217, 217, 217);
             cellHeaderDate.Colspan = 5;
 
@@ -85,7 +85,11 @@
         private void CreateTable(Document doc, int month, int year)
         {
             IClinicsData db = new ClinicsData();
-            var dbManipulations = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
+            var dbManipulations = db.Manipulations.All()
+                                    .Where(m => m.Date.Year == year && m.Date.Month == month)
+                                    .OrderBy(m => m.Date)
+                                    .ThenBy(m => m.Specialist.FirstName);
+
             var dbProcedures = db.Procedures.All().ToList();
             var dbPatients = db.Patients.All().ToList();
             var dbSpecialists = db.Specialists.All().ToList();
