@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<reports>
+  <specialist name="Makedonski">
+    <day date="8/29/2014">
+      <expense>54.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Dimov">
+    <day date="8/26/2014">
+      <expense>295.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Ivanov">
+    <day date="8/30/2014">
+      <expense>200.00</expense>
+      <manipulations>5</manipulations>
+    </day>
+    <day date="8/17/2014">
+      <expense>1850.00</expense>
+      <manipulations>10</manipulations>
+    </day>
+    <day date="8/27/2014">
+      <expense>160.00</expense>
+      <manipulations>4</manipulations>
+    </day>
+    <day date="8/28/2014">
+      <expense>160.00</expense>
+      <manipulations>4</manipulations>
+    </day>
+    <day date="8/25/2014">
+      <expense>525.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Gospodinov">
+    <day date="8/27/2014">
+      <expense>900.00</expense>
+      <manipulations>4</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Milanova">
+    <day date="8/31/2014">
+      <expense>180.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Petrov">
+    <day date="8/29/2014">
+      <expense>176.00</expense>
+      <manipulations>2</manipulations>
+    </day>
+    <day date="8/25/2014">
+      <expense>180.00</expense>
+      <manipulations>3</manipulations>
+    </day>
+  </specialist>
+  <specialist name="Martinova">
+    <day date="8/31/2014">
+      <expense>115.00</expense>
+      <manipulations>1</manipulations>
+    </day>
+    <day date="8/28/2014">
+      <expense>230.00</expense>
+      <manipulations>2</manipulations>
+    </day>
+    <day date="8/26/2014">
+      <expense>115.00</expense>
+      <manipulations>1</manipulations>
+    </day>
+    <day date="8/30/2014">
+      <expense>115.00</expense>
+      <manipulations>1</manipulations>
+    </day>
+    <day date="8/25/2014">
+      <expense>115.00</expense>
+      <manipulations>1</manipulations>
+    </day>
+  </specialist>
+</reports>

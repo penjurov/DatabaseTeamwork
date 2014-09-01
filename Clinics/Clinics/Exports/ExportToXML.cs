@@ -26,20 +26,16 @@
             int month = this.Month.SelectedIndex + 1;
             int year = int.Parse(this.Year.Text);
 
-            // Generating monthly report by clinic as XML file... 
-            if (true)
-            {
-                CreateSampleReport();
-            }
-            else
-            {
-                var reports = RetrieveReportFromDB(year, month);
-                //var reports = RetrieveReportTest(year, month);
-                var clinicsReport = new XElement("reports", GetReportsXML(reports));
-                clinicsReport.Save("../../Reports/Specialists-Monthly-Reports.xml");
-            }
+            SaveReportsAsXML(month, year);
 
             MessageBox.Show("XML report generated in the Reports folder.");
+        }
+
+        private void SaveReportsAsXML(int month, int year)
+        {
+            var reportsDict = RetrieveReports(year, month);
+            var clinicsReport = new XElement("reports", GetReportsXML(reportsDict));
+            clinicsReport.Save("../../Reports/Specialists-Monthly-Reports.xml");
         }
 
         private List<XElement> GetReportsXML(Dictionary<string, Dictionary<DateTime, DailyReport>> reports)
@@ -77,93 +73,46 @@
             return dailyReportsXML;
         }
 
-        public static Dictionary<string, Dictionary<DateTime, DailyReport>> RetrieveReportFromDB(int year, int month)
+        public static Dictionary<string, Dictionary<DateTime, DailyReport>> RetrieveReports(int year, int month)
         {
             var specialists = new Dictionary<string, Dictionary<DateTime, DailyReport>>();
 
-            using (var db = new ClinicsDBContext())
+            var db = new ClinicsData();
+
+            var manipulations = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
+
+            //    <specialists>
+            //      <specialist name="Nakov">
+            //        <day date="8/28/2014">
+            //          <expense>12365.01</expense>
+            //          <manipulations>6</manipulations>
+            //        </day>
+            //      </specialist>
+            //    </specialists>
+
+            foreach (var manipulation in manipulations)
             {
-                var result = db.Manipulations.Where(m => m.Date.Year == year && m.Date.Month == month);
+                Decimal sum = manipulation.Procedure.Price;
+                DateTime day = manipulation.Date;
 
-                // This is how it will look:
-                //    <specialists>
-                //      <specialist name="Nakov">
-                //        <day date="8/28/2014">
-                //          <expense>12365.01</expense>
-                //          <manipulations>6</manipulations>
-                //        </day>
-                //        <day date="8/29/2014">
-                //          <expense>265.01</expense>
-                //          <manipulations>2</manipulations>
-                //        </day>
-                //      </specialist>
-                //      <specialist name="Minkov">
-                //        <day date="8/28/2014">
-                //          <expense>555.01</expense>
-                //          <manipulations>4</manipulations>
-                //        </day>
-                //        <day date="8/29/2014">
-                //          <expense>6665.01</expense>
-                //          <manipulations>5</manipulations>
-                //        </day>
-                //      </specialist>
-                //    </specialists>
+                string specName = manipulation.Specialist.LastName;
 
-                foreach (var manipulation in db.Manipulations)
+                if (!specialists.ContainsKey(specName))
                 {
-                    Decimal sum = manipulation.Procedure.Price;
-                    DateTime day = manipulation.Date;
-
-                    string specName = manipulation.Specialist.LastName;
-
-                    if (!specialists.ContainsKey(specName))
-                    {
-                        specialists.Add(specName, new Dictionary<DateTime, DailyReport>());
-                    }
-
-                    if (!specialists[specName].ContainsKey(day))
-                    {
-                        specialists[specName].Add(day, new DailyReport());
-                    }
-
-                    specialists[specName][day].Expenses += sum;
-                    specialists[specName][day].ManipulationCount++;
+                    specialists.Add(specName, new Dictionary<DateTime, DailyReport>());
                 }
 
-                return specialists;
+                if (!specialists[specName].ContainsKey(day))
+                {
+                    specialists[specName].Add(day, new DailyReport());
+                }
+
+                specialists[specName][day].Expenses += sum;
+                specialists[specName][day].ManipulationCount++;
             }
-        }
 
-        private static void CreateSampleReport()
-        {
-            var day = new XElement("day");
-            day.SetAttributeValue("date", "8/28/2014");
-            day.Add(new XElement("expense", "12365.01"), new XElement("manipulations", "6"));
+            return specialists;
 
-            var day2 = new XElement("day");
-            day2.SetAttributeValue("date", "8/29/2014");
-            day2.Add(new XElement("expense", "265.01"), new XElement("manipulations", "2"));
-
-            var spec1 = new XElement("specialist", day, day2);
-            spec1.SetAttributeValue("name", "Nakov");
-
-            ////////////
-            var day3 = new XElement("day");
-            day3.SetAttributeValue("date", "8/28/2014");
-            day3.Add(new XElement("expense", "555.01"), new XElement("manipulations", "4"));
-
-            var day4 = new XElement("day");
-            day4.SetAttributeValue("date", "8/29/2014");
-            day4.Add(new XElement("expense", "6665.01"), new XElement("manipulations", "5"));
-
-            var spec2 = new XElement("specialist", day3, day4);
-            spec2.SetAttributeValue("name", "Minkov");
-
-
-            //////
-            var specialists = new XElement("specialists", spec1, spec2);
-
-            specialists.Save("../../Reports/Clinics-Monhtly-Reports.xml");
         }
     }
 }
