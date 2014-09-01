@@ -4,18 +4,17 @@
     using System.Windows.Forms;
     using System.Web.Script.Serialization;
     using Clinics.Data;
-    using Clinics.Models;
-    using System.Collections.Generic;
+    using Clinics.MySQLModels;
     using System.IO;
     using System.Linq;
-    using MySql.Data.MySqlClient;
 
     public partial class ExportToJSONAndMySQL : Form
     {
+        private ClinicsData db = new ClinicsData();
+        private ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
+
         public void ConvertToJSON()
         {
-            var db = new ClinicsData();
-
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             var year = int.Parse(txtBoxYear.Text);
 
@@ -25,14 +24,20 @@
 
             foreach (var specialist in groupManipulations)
             {
+                var specialistName = specialist.First().Specialist.FirstName + " " + specialist.First().Specialist.LastName;
+                var procedureName = specialist.First().Procedure.Name;
+                var procedureCount = specialist.Count();
+                var totalPrice = specialist.First().Procedure.Price * specialist.Count();
+                var month = specialist.First().Date.Month;
+
                 object dataForReport = new
                 {
-                    Specialist = specialist.First().Specialist.FirstName + " " + specialist.First().Specialist.LastName,
-                    Procedure = specialist.First().Procedure.Name,
-                    ProcedureCount = specialist.Count(),
-                    TotalPrice = specialist.First().Procedure.Price * specialist.Count(),
-                    Month = specialist.First().Date.Month,
-                    Year = specialist.First().Date.Year
+                    Specialist = specialistName,
+                    Procedure = procedureName,
+                    ProcedureCount = procedureCount,
+                    TotalPrice = totalPrice,
+                    Month = month,
+                    Year = year
                 };
 
                 string specialistAsJSON = serializer.Serialize(dataForReport);
@@ -41,9 +46,30 @@
                 using (writer)
                 {
                     writer.WriteLine(specialistAsJSON);
-                }
+                }    
 
+                var specialistsStatistics = mySqlContext.Specialiststatistics
+                    .Where(ss => ss.Specialist.Equals(specialistName) && ss.Procedure.Equals(procedureName) && ss.Month.Equals(month) && ss.Year == year)
+                    .FirstOrDefault();
+
+                if (specialistsStatistics == null)
+                {
+                    Specialiststatistic newSpecialistStatistics = new Specialiststatistic
+                    {
+                        Specialist = specialistName,
+                        Procedure = procedureName,
+                        ProcedureCount = procedureCount,
+                        TotalPrice = totalPrice.ToString(),
+                        Month = month,
+                        Year = year
+                    };
+
+                    mySqlContext.Add(newSpecialistStatistics);
+                    mySqlContext.SaveChanges();
+                }               
             }
+
+            
         }
 
         public ExportToJSONAndMySQL()
@@ -51,7 +77,17 @@
             this.InitializeComponent();
         }
 
+        ~ExportToJSONAndMySQL()
+        {
+            this.mySqlContext.Dispose();
+        }
+
         private void btnExportToJSON_Click_1(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button1_Click(object sender, EventArgs e)
         {
             ConvertToJSON();
         }

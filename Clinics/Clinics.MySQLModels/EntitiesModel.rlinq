@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DomainModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="2.0.0.0" name="ClinicsMySQLContext" namespace="Clinics.MySQLModels" showPropertiesCompartment="true" xmlns="http://www.telerik.com/ORM">
+  <orm:orm name="ClinicsMySQLContext" backend="mysql" xmlns:orm="http://tempuri.org/ORM">
+    <orm:namespace name="Clinics.MySQLModels" default="true">
+      <orm:class name="Specialiststatistic" uniqueId="07ed0b84-8c68-43eb-9268-89e1db237f6f">
+        <orm:table name="specialiststatistics" />
+        <orm:identity>
+          <orm:key-generator name="autoinc" />
+          <orm:single-field field-name="_idSpecialistStatistics" />
+        </orm:identity>
+        <orm:concurrency strategy="changed" />
+        <orm:field name="_idSpecialistStatistics" property="IdSpecialistStatistics" behavior="readwrite" uniqueId="90cf943a-85fa-406a-8944-2db426b20c26" type="System.Int32">
+          <orm:column name="idSpecialistStatistics" sql-type="integer" nullable="false" length="0" scale="0" primary-key="true" backend-calculated="true" ado-type="Int32" />
+        </orm:field>
+        <orm:field name="_specialist" property="Specialist" behavior="readwrite" uniqueId="8406c643-dea2-4c19-987b-33a6c504c7f3" type="System.String">
+          <orm:column name="Specialist" sql-type="varchar" nullable="true" length="45" scale="0" ado-type="StringVariableLength" />
+        </orm:field>
+        <orm:field name="_procedure" property="Procedure" behavior="readwrite" uniqueId="621ef8fc-a0b9-4678-87a7-f79db69eb6b8" type="System.String">
+          <orm:column name="Procedure" sql-type="varchar" nullable="true" length="255" scale="0" ado-type="StringVariableLength" />
+        </orm:field>
+        <orm:field name="_procedureCount" property="ProcedureCount" behavior="readwrite" uniqueId="5115b26c-ed52-48b5-9f70-e2c374403e2c" type="System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]">
+          <orm:column name="ProcedureCount" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+        </orm:field>
+        <orm:field name="_totalPrice" property="TotalPrice" behavior="readwrite" uniqueId="03754f79-1c7e-4818-aa7c-76254b31b1ab" type="System.String">
+          <orm:column name="TotalPrice" sql-type="varchar" nullable="true" length="45" scale="0" ado-type="StringVariableLength" />
+        </orm:field>
+        <orm:field name="_month" property="Month" behavior="readwrite" uniqueId="a17ddd58-5ab5-4375-ab60-1f477a7dd8a7" type="System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]">
+          <orm:column name="Month" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+        </orm:field>
+        <orm:field name="_year" property="Year" behavior="readwrite" uniqueId="83b4874c-fd05-4de4-9765-2931215030e2" type="System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]">
+          <orm:column name="Year" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+        </orm:field>
+      </orm:class>
+    </orm:namespace>
+    <orm:schema schema="">
+      <orm:table name="specialiststatistics">
+        <orm:column name="idSpecialistStatistics" sql-type="integer" nullable="false" length="0" scale="0" primary-key="true" backend-calculated="true" ado-type="Int32" />
+        <orm:column name="Specialist" sql-type="varchar" nullable="true" length="45" scale="0" ado-type="StringVariableLength" />
+        <orm:column name="Procedure" sql-type="varchar" nullable="true" length="255" scale="0" ado-type="StringVariableLength" />
+        <orm:column name="ProcedureCount" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+        <orm:column name="TotalPrice" sql-type="varchar" nullable="true" length="45" scale="0" ado-type="StringVariableLength" />
+        <orm:column name="Month" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+        <orm:column name="Year" sql-type="integer" nullable="true" length="0" scale="0" ado-type="Int32" />
+      </orm:table>
+    </orm:schema>
+    <orm:relational-naming-settings>
+      <orm:source-strategy>Property</orm:source-strategy>
+      <orm:remove-camel-case>False</orm:remove-camel-case>
+    </orm:relational-naming-settings>
+  </orm:orm>
+  <ModelSettings xmlns="">
+    <AppConfigConnectionPropertyName>ClinicsMySqlConnection</AppConfigConnectionPropertyName>
+    <AppConfigConnectionString>server=78.90.4.28;database=telerik;uid=telerik;pwd=teamwork</AppConfigConnectionString>
+    <NamingSettings>
+      <ClassRules>
+        <CaseMode>PascalCase</CaseMode>
+        <PluralizationMode>Singularize</PluralizationMode>
+      </ClassRules>
+      <FieldRules>
+        <AddPrefix>_</AddPrefix>
+        <CaseMode>CamelCase</CaseMode>
+      </FieldRules>
+      <PropertyRules>
+        <CaseMode>PascalCase</CaseMode>
+      </PropertyRules>
+      <NavigationPropertyRules />
+    </NamingSettings>
+    <CodeGenerationSettings>
+      <MappingDefinitionType>Xml</MappingDefinitionType>
+    </CodeGenerationSettings>
+    <SchemaUpdateSettings />
+    <BackendConfigurationSettings>
+      <BackendConfiguration>
+        <Backend>MySql</Backend>
+        <ProviderName>MySql.Data.MySqlClient</ProviderName>
+      </BackendConfiguration>
+    </BackendConfigurationSettings>
+  </ModelSettings>
+  <Types>
+    <DomainClass Id="07ed0b84-8c68-43eb-9268-89e1db237f6f" name="Specialiststatistic" namespace="Clinics.MySQLModels" showPropertiesCompartment="true" concurrencyMode="Changed" showNavigationCompartment="true" showImplementationCompartment="true">
+      <Property Id="90cf943a-85fa-406a-8944-2db426b20c26" name="IdSpecialistStatistics" type="Int32" label="IdSpecialistStatistics : Int32" kind="Persistent" identity="true" fieldName="_idSpecialistStatistics" />
+      <Property Id="a17ddd58-5ab5-4375-ab60-1f477a7dd8a7" name="Month" type="Int32" label="Month : Int32" nullable="true" kind="Persistent" fieldName="_month" />
+      <Property Id="621ef8fc-a0b9-4678-87a7-f79db69eb6b8" name="Procedure" label="Procedure : String" kind="Persistent" fieldName="_procedure" />
+      <Property Id="5115b26c-ed52-48b5-9f70-e2c374403e2c" name="ProcedureCount" type="Int32" label="ProcedureCount : Int32" nullable="true" kind="Persistent" fieldName="_procedureCount" />
+      <Property Id="8406c643-dea2-4c19-987b-33a6c504c7f3" name="Specialist" label="Specialist : String" kind="Persistent" fieldName="_specialist" />
+      <Property Id="03754f79-1c7e-4818-aa7c-76254b31b1ab" name="TotalPrice" label="TotalPrice : String" kind="Persistent" fieldName="_totalPrice" />
+      <Property Id="83b4874c-fd05-4de4-9765-2931215030e2" name="Year" type="Int32" label="Year : Int32" nullable="true" kind="Persistent" fieldName="_year" />
+    </DomainClass>
+  </Types>
+  <domainContext>
+    <domainModelHasDomainContext Id="459fbfed-ca1c-4cb9-91ab-9851f90770ff">
+      <domainContainer name="ClinicsMySQLContext" namespace="Clinics.MySQLModels" showPropertiesCompartment="true">
+        <entitySetProperty name="Specialiststatistics" namespace="Clinics.MySQLModels" type="Specialiststatistic" label="Specialiststatistics : IQueryable&lt;Clinics.MySQLModels.Specialiststatistic&gt;" />
+      </domainContainer>
+    </domainModelHasDomainContext>
+  </domainContext>
+</DomainModel>

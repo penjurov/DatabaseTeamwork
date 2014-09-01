@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityDiagrams>
+  <entityDiagramsDiagram dslVersion="2.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="ClinicsMySQLContext" isDefault="true">
+    <DomainModelMoniker name="/ClinicsMySQLContext" />
+    <nestedChildShapes>
+      <classShape Id="b5b9cb1b-fe32-42ef-9bb0-8360cff4e0a4" absoluteBounds="0.75, 0.75, 1.5, 2.724278971354166">
+        <DomainClassMoniker name="/ClinicsMySQLContext/Specialiststatistic" />
+        <nestedChildShapes>
+          <elementListCompartment Id="0906be54-a2ae-4c49-8e95-cbf70c960328" absoluteBounds="0.765, 1.2599999999999998, 1.4700000000000002, 1.5954996744791667" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
+          <elementListCompartment Id="aacbe705-61e2-4562-95a3-2e2197685bc5" absoluteBounds="0.765, 2.8654996744791665, 1.4700000000000002, 0.2493896484375" name="ImplementationsCompartment" titleTextColor="Black" itemTextColor="Black" />
+          <elementListCompartment Id="81b2383c-16f3-4a12-bcf3-eda3b57a5e2f" absoluteBounds="0.765, 3.1248893229166663, 1.4700000000000002, 0.2493896484375" name="NavigationCompartment" titleTextColor="Black" itemTextColor="Black" />
+        </nestedChildShapes>
+      </classShape>
+    </nestedChildShapes>
+  </entityDiagramsDiagram>
+</EntityDiagrams>
