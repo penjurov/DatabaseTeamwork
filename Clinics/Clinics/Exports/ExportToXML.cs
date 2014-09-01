@@ -9,13 +9,6 @@
 
     public partial class ExportToXML : Form
     {
-        public class DailyReport
-        {
-            public DateTime Date { get; set; }
-            public decimal Expenses { get; set; }
-            public int ManipulationCount { get; set; }
-        }
-
         public ExportToXML()
         {
             this.InitializeComponent();
@@ -33,54 +26,12 @@
 
         private void SaveReportsAsXML(int month, int year)
         {
-            var reportsDict = RetrieveReports(year, month);
-            var clinicsReport = new XElement("reports", GetReportsXML(reportsDict));
-            clinicsReport.Save("../../Reports/Specialists-Monthly-Reports.xml");
+            var reportXML = GenerateReportXML(year, month);
+            reportXML.Save("../../Reports/Specialists-Monthly-Reports.xml");
         }
 
-        private List<XElement> GetReportsXML(Dictionary<string, Dictionary<DateTime, DailyReport>> reports)
+        private XElement GenerateReportXML(int year, int month)
         {
-            var specialistsXML = new List<XElement>();
-            foreach (var specialist in reports)
-            {
-                var specialistXML = new XElement("specialist", GetDailyReportsXML(specialist.Value));
-                specialistXML.SetAttributeValue("name", specialist.Key);
-                specialistsXML.Add(specialistXML);
-            }
-
-            return specialistsXML;
-        }
-
-        private List<XElement> GetDailyReportsXML(Dictionary<DateTime, DailyReport> dailyReports)
-        {
-            var dailyReportsXML = new List<XElement>();
-            foreach (var daily in dailyReports)
-            {
-                var dateXML = new XElement("day");
-                dateXML.SetAttributeValue("date", daily.Key.ToShortDateString());
-
-                var expenseXML = new XElement("expense");
-                expenseXML.Value = daily.Value.Expenses.ToString();
-
-                var countXML = new XElement("manipulations");
-                countXML.Value = daily.Value.ManipulationCount.ToString();
-
-                dateXML.Add(expenseXML, countXML);
-
-                dailyReportsXML.Add(dateXML);
-            }
-
-            return dailyReportsXML;
-        }
-
-        public static Dictionary<string, Dictionary<DateTime, DailyReport>> RetrieveReports(int year, int month)
-        {
-            var specialists = new Dictionary<string, Dictionary<DateTime, DailyReport>>();
-
-            var db = new ClinicsData();
-
-            var manipulations = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
-
             //    <specialists>
             //      <specialist name="Nakov">
             //        <day date="8/28/2014">
@@ -88,31 +39,38 @@
             //          <manipulations>6</manipulations>
             //        </day>
             //      </specialist>
-            //    </specialists>
+            //    </specialists>            
 
-            foreach (var manipulation in manipulations)
+            var root = new XElement("reports");
+
+            var db = new ClinicsData();
+            foreach (var specialist in db.Specialists.All())
             {
-                Decimal sum = manipulation.Procedure.Price;
-                DateTime day = manipulation.Date;
+                var days = specialist
+                    .Manupulations
+                    .Where(m => m.Date.Year == year && m.Date.Month == month)
+                    .GroupBy(m => m.Date)
+                    .ToDictionary(gr => gr.Key, gr => new
+                    {
+                        manipulations = gr.Count(),
+                        expense = gr.Sum(m => m.Procedure.Price)
+                    })
+                    .Select(date => new XElement(
+                        "day",
+                        new XAttribute("date", date.Key.ToShortDateString()),
+                        new XElement("expense", date.Value.expense),
+                        new XElement("manipulations", date.Value.manipulations)
+                        ));
 
-                string specName = manipulation.Specialist.LastName;
+                var specialistXML = new XElement(
+                    "specialist",
+                    new XAttribute("name", specialist.LastName),
+                    days);
 
-                if (!specialists.ContainsKey(specName))
-                {
-                    specialists.Add(specName, new Dictionary<DateTime, DailyReport>());
-                }
-
-                if (!specialists[specName].ContainsKey(day))
-                {
-                    specialists[specName].Add(day, new DailyReport());
-                }
-
-                specialists[specName][day].Expenses += sum;
-                specialists[specName][day].ManipulationCount++;
+                root.Add(specialistXML);
             }
 
-            return specialists;
-
+            return root;
         }
     }
 }
