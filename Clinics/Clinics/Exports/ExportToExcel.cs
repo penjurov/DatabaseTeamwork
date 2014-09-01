@@ -80,7 +80,7 @@
         {
             string fileName = "stats";
             string fileNameWithDate = string.Format("{0}_{1}.xlsx", fileName, DateTime.Now.ToString("dd-MM-yyyy"));
-            string fileNameWithPath = @"..\..\..\Output\" + fileNameWithDate;
+            string fileNameWithPath = "../../Reports/" + fileNameWithDate;
 
             // Delete existing file with same file name.
             if (File.Exists(fileNameWithPath))
