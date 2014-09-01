@@ -193,6 +193,10 @@
       <Project>{230867d0-9f01-4e37-8cd6-da8bb60296e1}</Project>
       <Name>Clinics.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Clinics.Operations\Clinics.Operations.csproj">
+      <Project>{bc09925a-9f6c-43f8-9187-7562263f8ffb}</Project>
+      <Name>Clinics.Operations</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\SQLite.Interop.dll" />

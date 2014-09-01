@@ -6,9 +6,10 @@
     using System.Windows.Forms;
 
     using Clinics.Data;
-    using Clinics.Models;
+    using Clinics.Operations.Imports;
     using MongoDB.Bson;
     using MongoDB.Driver;
+    
 
     public partial class ImportFromMongoDB : Form
     {
@@ -19,6 +20,7 @@
         private static MongoServer mongoServer = mongoClient.GetServer();
         private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
         private IClinicsData data = new ClinicsData();
+        private ImportFromMongo mongoImport = new ImportFromMongo();
 
         public ImportFromMongoDB()
         {
@@ -36,25 +38,20 @@
             {
                 this.importProgress.Value = 0;
                 this.importProgress.Maximum = NumberOfTables;
-
-                var titles = mongoDb.GetCollection<BsonDocument>("Titles");
-                this.ImportTitles(titles);
+               
+                mongoImport.ImportTitles(data);
                 this.importProgress.Value++;
 
-                var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-                this.ImportProcedures(procedures);
+                mongoImport.ImportProcedures(data);
                 this.importProgress.Value++;
 
-                var specialties = mongoDb.GetCollection<BsonDocument>("Specialties");
-                this.ImportSpecialties(specialties);
+                mongoImport.ImportSpecialties(data);
                 this.importProgress.Value++;
 
-                var specialists = mongoDb.GetCollection<BsonDocument>("Specialists");
-                this.ImportSpecialists(specialists);
+                mongoImport.ImportSpecialists(data);
                 this.importProgress.Value++;
 
-                var clinics = mongoDb.GetCollection<BsonDocument>("Clinics");
-                this.ImportClinics(clinics);
+                mongoImport.ImportClinics(data);
                 this.importProgress.Value++;
 
                 this.data.SaveChanges();
@@ -74,210 +71,6 @@
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private void ImportTitles(MongoCollection<BsonDocument> titles)
-        {
-            var allTitles = titles.FindAll();
-
-            foreach (var title in allTitles)
-            {
-                var mongoId = this.GetValue(title, "TitleId");
-                var idGuid = new Guid(mongoId);
-                string titleName = this.GetValue(title, "Title");
-
-                var existingRecord = this.data.Titles.All()
-                    .Where(t => t.Id.Equals(idGuid))
-                    .FirstOrDefault();
-
-                if (existingRecord == null)
-                {
-                    Title newTitle = new Title
-                    {
-                        Id = idGuid,
-                        TitleName = titleName
-                    };
-
-                    this.data.Titles.Add(newTitle);                  
-                }
-                else
-                {
-                    existingRecord.TitleName = titleName;
-                }
-            }
-        }
-
-        private void ImportClinics(MongoCollection<BsonDocument> clinics)
-        {
-            var allClinics = clinics.FindAll();
-
-            foreach (var clinic in allClinics)
-            {
-                var id = this.GetValue(clinic, "Id");
-                var idGuid = new Guid(id);
-
-                string name = this.GetValue(clinic, "ClinicName");
-                string address = this.GetValue(clinic, "ClinicAddress");
-                var phones = this.GetValue(clinic, "ClinicPhones");
-
-                var chieff = this.GetValue(clinic, "ClinicChiefId");
-                var chieffdGuid = new Guid(chieff);
-
-                var existingRecord = this.data.Clinics.All()
-                    .Where(c => c.Id.Equals(idGuid))
-                    .FirstOrDefault();
-
-                if (existingRecord == null)
-                {
-                    Clinic newClinic = new Clinic
-                    {
-                        Id = idGuid,
-                        ClinicName = name,
-                        ClinicAddress = address,
-                        ClinicPhones = phones,
-                        ClinicChiefId = chieffdGuid
-                    };
-
-                    this.data.Clinics.Add(newClinic);
-                }
-                else
-                {
-                    existingRecord.ClinicName = name;
-                    existingRecord.ClinicAddress = address;
-                    existingRecord.ClinicPhones = phones;
-                    existingRecord.ClinicChiefId = chieffdGuid;
-                }
-            }
-        }
-
-        private void ImportProcedures(MongoCollection<BsonDocument> procedures)
-        {
-            var allProcedures = procedures.FindAll();
-
-            foreach (var procedure in allProcedures)
-            {
-                var idGuid = procedure["_id"].AsGuid;
-                var name = this.GetValue(procedure, "Name");
-                var price = decimal.Parse(this.GetValue(procedure, "Price"));
-                var information = this.GetValue(procedure, "Information");
-
-                var existingRecord = this.data.Procedures.All()
-                    .Where(p => p.Id.Equals(idGuid))
-                    .FirstOrDefault();
-
-                if (existingRecord == null)
-                {
-                    Procedure newProcedure = new Procedure
-                    {
-                        Id = idGuid,
-                        Name = name,
-                        Price = price,
-                        Information = information
-                    };
-
-                    this.data.Procedures.Add(newProcedure);
-                }
-                else
-                {
-                    existingRecord.Name = name;
-                    existingRecord.Price = price;
-                    existingRecord.Information = information;
-                }
-            }
-        }
-
-        private void ImportSpecialists(MongoCollection<BsonDocument> specialists)
-        {
-            var allSpecialists = specialists.FindAll();
-
-            foreach (var specialist in allSpecialists)
-            {
-                var mongoId = this.GetValue(specialist, "Id");
-                var idGuid = new Guid(mongoId);
-
-                var firstName = this.GetValue(specialist, "FirstName");
-                var middleName = this.GetValue(specialist, "MiddleName");
-                var lastName = this.GetValue(specialist, "LastName");
-
-                var title = this.GetValue(specialist, "TitleId");
-                var titleGuid = new Guid(title);
-
-                var specialty = this.GetValue(specialist, "SpecialtyId");
-                var specialtyGuid = new Guid(specialty);
-
-                var uin = this.GetValue(specialist, "Uin");
-
-                var existingRecord = this.data.Specialists.All()
-                    .Where(s => s.Id.Equals(idGuid))
-                    .FirstOrDefault();
-
-                if (existingRecord == null)
-                {
-                    Specialist newSpecialist = new Specialist
-                    {
-                        Id = idGuid,
-                        FirstName = firstName,
-                        MiddleName = middleName,
-                        LastName = lastName,
-                        SpecialtyId = specialtyGuid,
-                        TitleId = titleGuid,
-                        Uin = uin
-                    };
-
-                    this.data.Specialists.Add(newSpecialist);
-                }
-                else
-                {
-                    existingRecord.FirstName = firstName;
-                    existingRecord.MiddleName = middleName;
-                    existingRecord.LastName = lastName;
-                    existingRecord.SpecialtyId = specialtyGuid;
-                    existingRecord.TitleId = titleGuid;
-                    existingRecord.Uin = uin;
-                }
-            }
-        }
-
-        private void ImportSpecialties(MongoCollection<BsonDocument> specialies)
-        {
-            var allSpecialties = specialies.FindAll();
-
-            foreach (var specialty in allSpecialties)
-            {
-                var id = this.GetValue(specialty, "SpecialtyId");
-                var idGuid = new Guid(id);
-                var specialtyName = this.GetValue(specialty, "Specialty");
-
-                var existingRecord = this.data.Specialties.All()
-                    .Where(s => s.Id.Equals(idGuid))
-                    .FirstOrDefault();
-
-                if (existingRecord == null)
-                {
-                    Specialty newSpecialty = new Specialty
-                    {
-                        Id = idGuid,
-                        Speciality = specialtyName
-                    };
-
-                    this.data.Specialties.Add(newSpecialty);
-                }
-                else
-                {
-                    existingRecord.Speciality = specialtyName;
-                }
-            }
-        }
-
-        private string GetValue(BsonDocument document, string key)
-        {
-            string value = string.Empty;
-            if (document.Contains(key))
-            {
-                value = document[key].AsString;
-            }
-
-            return value;
         }
     }
 }

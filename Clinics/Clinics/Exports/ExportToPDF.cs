@@ -85,6 +85,16 @@
         private void CreateTable(Document doc, int month, int year)
         {
             IClinicsData db = new ClinicsData();
+
+            ClinicsData data = new ClinicsData();
+
+            var asd = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
+
+            foreach (var item in asd)
+            {
+                MessageBox.Show(item.Id.ToString());
+            }
+
             var dbManipulations = db.Manipulations.All().Where(m => m.Date.Year == year && m.Date.Month == month);
             var dbProcedures = db.Procedures.All().ToList();
             var dbPatients = db.Patients.All().ToList();
