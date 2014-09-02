@@ -34,6 +34,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportToJsonAndMySql));
             this.txtBoxYear = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -43,26 +44,29 @@
             // 
             // txtBoxYear
             // 
-            this.txtBoxYear.Location = new System.Drawing.Point(136, 24);
+            this.txtBoxYear.Location = new System.Drawing.Point(204, 30);
+            this.txtBoxYear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtBoxYear.Name = "txtBoxYear";
-            this.txtBoxYear.Size = new System.Drawing.Size(100, 20);
+            this.txtBoxYear.Size = new System.Drawing.Size(148, 23);
             this.txtBoxYear.TabIndex = 9;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(135, 8);
+            this.label2.Location = new System.Drawing.Point(202, 10);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(29, 13);
+            this.label2.Size = new System.Drawing.Size(39, 16);
             this.label2.TabIndex = 8;
             this.label2.Text = "Year";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 8);
+            this.label1.Location = new System.Drawing.Point(14, 10);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.Size = new System.Drawing.Size(54, 16);
             this.label1.TabIndex = 7;
             this.label1.Text = "Month";
             // 
@@ -82,32 +86,41 @@
             "October",
             "November",
             "December"});
-            this.cmbBoxMonth.Location = new System.Drawing.Point(12, 24);
+            this.cmbBoxMonth.Location = new System.Drawing.Point(18, 30);
+            this.cmbBoxMonth.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cmbBoxMonth.Name = "cmbBoxMonth";
-            this.cmbBoxMonth.Size = new System.Drawing.Size(118, 21);
+            this.cmbBoxMonth.Size = new System.Drawing.Size(175, 24);
             this.cmbBoxMonth.TabIndex = 6;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(242, 22);
+            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
+            this.button1.Font = new System.Drawing.Font("Bookman Old Style", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button1.Location = new System.Drawing.Point(363, 27);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(112, 28);
             this.button1.TabIndex = 5;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Export_Click);
             // 
-            // ExportToJSONAndMySQL
+            // ExportToJsonAndMySql
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 362);
+            this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.ClientSize = new System.Drawing.Size(686, 385);
             this.Controls.Add(this.txtBoxYear);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbBoxMonth);
             this.Controls.Add(this.button1);
-            this.Name = "ExportToJSONAndMySQL";
+            this.Font = new System.Drawing.Font("Bookman Old Style", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Name = "ExportToJsonAndMySql";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Export to JSON and MySQL";
             this.ResumeLayout(false);
