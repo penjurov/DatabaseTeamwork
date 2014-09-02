@@ -14,7 +14,7 @@
         private const string FileHeader = "Aggregated Procedures Report";
         private const string FileFooter = "Total manipulations: ";
 
-        public void Export(int month, int year)
+        public void Export( IClinicsData data, int month, int year)
         {
             Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 42, 35);
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(FileName, FileMode.Create));
@@ -23,7 +23,7 @@
 
             this.CreateTitleHeader(doc);
             this.CreateTableHeader(doc, month, year);
-            this.CreateTable(doc, month, year);
+            this.CreateTable(data, doc, month, year);
 
             doc.Close();
         }
@@ -72,18 +72,17 @@
             doc.Add(tableHeader);
         }
 
-        private void CreateTable(Document doc, int month, int year)
-        {
-            IClinicsData db = new ClinicsData();
-            var dbManipulations = db.Manipulations.All()
+        private void CreateTable(IClinicsData data, Document doc, int month, int year)
+        {          
+            var dbManipulations = data.Manipulations.All()
                 .Where(m => m.Date.Year == year && m.Date.Month == month)
                 .OrderBy(m => m.Date)
                 .ThenBy(m => m.Specialist.FirstName);
 
-            var dbProcedures = db.Procedures.All().ToList();
-            var dbPatients = db.Patients.All().ToList();
-            var dbSpecialists = db.Specialists.All().ToList();
-            var dbTitles = db.Titles.All().ToList();
+            var dbProcedures = data.Procedures.All().ToList();
+            var dbPatients = data.Patients.All().ToList();
+            var dbSpecialists = data.Specialists.All().ToList();
+            var dbTitles = data.Titles.All().ToList();
 
             PdfPTable tableBody = new PdfPTable(5);
 

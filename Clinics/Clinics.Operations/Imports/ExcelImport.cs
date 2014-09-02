@@ -40,7 +40,7 @@
                             
                         entry.ExtractToFile(Path.Combine(tempFolder, TempFileName), true);
 
-                    DataTable excelData = this.ReadExcelData(string.Format("{0}{1}", tempFolder, TempFileName));
+                        DataTable excelData = this.ReadExcelData(string.Format("{0}{1}", tempFolder, TempFileName));
 
                         foreach (DataRow row in excelData.Rows)
                         {
