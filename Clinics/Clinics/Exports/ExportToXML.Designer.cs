@@ -1,15 +1,15 @@
 ﻿namespace ClinicsProgram.Exports
 {
-    public partial class ExportToXML
+    public partial class ExportToXml
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TextBox Year;
+        private System.Windows.Forms.TextBox year;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox Month;
+        private System.Windows.Forms.ComboBox month;
         private System.Windows.Forms.Button button1;
 
         /// <summary>
@@ -34,21 +34,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportToXML));
-            this.Year = new System.Windows.Forms.TextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportToXml));
+            this.year = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.Month = new System.Windows.Forms.ComboBox();
+            this.month = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Year
             // 
-            this.Year.Location = new System.Drawing.Point(204, 30);
-            this.Year.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Year.Name = "Year";
-            this.Year.Size = new System.Drawing.Size(148, 23);
-            this.Year.TabIndex = 9;
+            this.year.Location = new System.Drawing.Point(204, 30);
+            this.year.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.year.Name = "Year";
+            this.year.Size = new System.Drawing.Size(148, 23);
+            this.year.TabIndex = 9;
             // 
             // label2
             // 
@@ -72,8 +72,8 @@
             // 
             // Month
             // 
-            this.Month.FormattingEnabled = true;
-            this.Month.Items.AddRange(new object[] {
+            this.month.FormattingEnabled = true;
+            this.month.Items.AddRange(new object[] {
             "January",
             "February",
             "March",
@@ -86,11 +86,11 @@
             "October",
             "November",
             "December"});
-            this.Month.Location = new System.Drawing.Point(18, 30);
-            this.Month.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Month.Name = "Month";
-            this.Month.Size = new System.Drawing.Size(175, 24);
-            this.Month.TabIndex = 6;
+            this.month.Location = new System.Drawing.Point(18, 30);
+            this.month.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.month.Name = "Month";
+            this.month.Size = new System.Drawing.Size(175, 24);
+            this.month.TabIndex = 6;
             // 
             // button1
             // 
@@ -102,7 +102,8 @@
             this.button1.TabIndex = 5;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.ExportToXML_Click);
+            this.button1.Click += new System.EventHandler(this.ExportToXml_Click);
+
             // 
             // ExportToXML
             // 
@@ -111,10 +112,10 @@
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(686, 385);
-            this.Controls.Add(this.Year);
+            this.Controls.Add(this.year);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.Month);
+            this.Controls.Add(this.month);
             this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("Bookman Old Style", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
