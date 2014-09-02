@@ -5,34 +5,18 @@
     using System.Data;
     using System.Data.SQLite;
     using System.IO;
-    using MySql.Data.MySqlClient;
     using OfficeOpenXml;
     using OfficeOpenXml.Table;
+    using Clinics.MySQLModels;
 
     public class ExcelExport
-    { 
+    {
         public void Export()
         {
-            DataTable specialists = this.ReadFromMySql();
             DataTable procedures = this.ReadFromSQLite();
-
-            DataTable joined = this.JoinDataTables(specialists, procedures, "Name", (s, p) => s.Field<string>("Procedure") == p.Field<string>("Name"));
+            DataTable joined = this.JoinData(procedures, "Procedure", "Name");
 
             this.SaveDataToExcel(joined);
-        }
-
-        private DataTable ReadFromMySql()
-        {
-            var dbCon = this.GetMySqlConnection();
-            dbCon.Open();
-            using (dbCon)
-            {
-                var dataSet = new DataSet();
-                var adapter = new MySqlDataAdapter("SELECT * FROM SpecialistStatistics", dbCon);
-
-                adapter.Fill(dataSet);
-                return dataSet.Tables[0];
-            }
         }
 
         private DataTable ReadFromSQLite()
@@ -47,12 +31,6 @@
                 adapter.Fill(dataSet);
                 return dataSet.Tables[0];
             }
-        }
-
-        private MySqlConnection GetMySqlConnection()
-        {
-            string connStr = ConfigurationManager.ConnectionStrings["ClinicsMySQL"].ConnectionString;
-            return new MySqlConnection(connStr);
         }
 
         private SQLiteConnection GetSQLiteConnection()
@@ -95,60 +73,61 @@
             }
         }
 
-        private DataTable JoinDataTables(DataTable t1, DataTable t2, string joinCol, params Func<DataRow, DataRow, bool>[] joinOn)
+        private DataTable JoinData(DataTable procedures, string joinProp, string joinCol)
+        {
+            ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
+
+            DataTable result = GenerateExcelColumns(procedures, joinCol);
+
+            // For each item in the collection fill a row in the excel table
+            foreach (var row in mySqlContext.Specialiststatistics)
+            {
+                DataRow insertRow = result.NewRow();
+
+                // Fill the properties of the object
+                foreach (var prop in typeof(Specialiststatistic).GetProperties())
+                {
+                    insertRow[prop.Name] = row.GetType().GetProperty(prop.Name).GetValue(row, null);
+                }
+
+                // Find the matching row from the table
+                string procName = row.GetType().GetProperty(joinProp).GetValue(row, null).ToString();
+                foreach (DataRow proc in procedures.Rows)
+                {
+                    if ((string)proc[joinCol] == procName)
+                    {
+                        foreach (DataColumn procCol in procedures.Columns)
+                        {
+                            if (procCol.ColumnName != joinCol)
+                                insertRow[procCol.ColumnName] = proc[procCol.ColumnName];
+                        }
+
+                        break;
+                    }
+                }
+
+                result.Rows.Add(insertRow);
+            }
+
+            return result;
+        }
+
+        private static DataTable GenerateExcelColumns(DataTable procedures, string joinCol)
         {
             DataTable result = new DataTable();
-            foreach (DataColumn col in t1.Columns)
+
+            // Add excel colums corresponding to the properties of the object
+            foreach (var prop in typeof(Specialiststatistic).GetProperties())
             {
-                if (result.Columns[col.ColumnName] == null)
-                {
+                result.Columns.Add(prop.Name, typeof(string));
+            }
+
+            // Add excel columns from the datatable colums
+            foreach (DataColumn col in procedures.Columns)
+            {
+                if (col.ColumnName != joinCol)
                     result.Columns.Add(col.ColumnName, col.DataType);
-                }
             }
-
-            foreach (DataColumn col in t2.Columns)
-            {
-                if (result.Columns[col.ColumnName] == null && col.ColumnName != joinCol)
-                {
-                    result.Columns.Add(col.ColumnName, col.DataType);
-                }
-            }
-
-            foreach (DataRow row1 in t1.Rows)
-            {
-                var joinRows = t2.AsEnumerable().Where(row2 =>
-                {
-                    foreach (var parameter in joinOn)
-                    {
-                        if (!parameter(row1, row2))
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                });
-
-                foreach (DataRow fromRow in joinRows)
-                {
-                    DataRow insertRow = result.NewRow();
-                    foreach (DataColumn col1 in t1.Columns)
-                    {
-                        insertRow[col1.ColumnName] = row1[col1.ColumnName];
-                    }
-
-                    foreach (DataColumn col2 in t2.Columns)
-                    {
-                        if (col2.ColumnName != joinCol)
-                        {
-                            insertRow[col2.ColumnName] = fromRow[col2.ColumnName];
-                        }
-                    }
-
-                    result.Rows.Add(insertRow);
-                }
-            }
-
             return result;
         }
     }

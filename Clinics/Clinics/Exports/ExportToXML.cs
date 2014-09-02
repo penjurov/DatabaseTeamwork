@@ -8,7 +8,7 @@
     
     public partial class ExportToXml : Form
     {
-        private const string SuccessMessage = "Exporting data to XML file done. The XML can be find in Reports folder!";
+        private const string SuccessMessage = "Exporting data to XML file done. The XML can be found in Reports folder!";
         private IClinicsData data = new ClinicsData();
         private XmlExport xmlExport = new XmlExport();
 

@@ -7,7 +7,7 @@
 
     public partial class ExportToExcel : Form
     {
-        private const string SuccessMessage = "Exporting data Excel done. The Excel file can be find in Reports folder!";
+        private const string SuccessMessage = "Exporting data to Excel done. The Excel file can be found in Reports folder!";
         private ExcelExport excelExport = new ExcelExport();
 
         public ExportToExcel()

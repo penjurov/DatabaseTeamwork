@@ -7,7 +7,7 @@
 
     public partial class ExportToPdf : Form
     {
-        private const string SuccessMessage = "Exporting data to PDF file done. The PDF can be find in Reports folder!";
+        private const string SuccessMessage = "Exporting data to PDF file done. The PDF can be found in Reports folder!";
         private PdfExport pdfExport = new PdfExport();
 
         public ExportToPdf()
