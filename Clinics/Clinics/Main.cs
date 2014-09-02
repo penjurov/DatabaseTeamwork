@@ -32,13 +32,13 @@
 
         private void ExportToPdfMenuItem_Click(object sender, EventArgs e)
         {
-            var exportToPdf = new ExportToPDF();
+            var exportToPdf = new ExportToPdf();
             exportToPdf.ShowDialog();
         }
 
         private void ExportToXml_Click(object sender, EventArgs e)
         {
-            var exportToXml = new ExportToXML();
+            var exportToXml = new ExportToXml();
             exportToXml.ShowDialog();
         }
 

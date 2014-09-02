@@ -10,7 +10,7 @@
 
     public partial class ExportToJsonAndMySql : Form
     {
-        private const string SuccessMessage = "Exporting data to MySQL Server and generating Json files done. The Json files can be find into Reports folder!";
+        private const string SuccessMessage = "Exporting data to MySQL Server and generating Json files done. The Json files can be find in Reports folder!";
         private IClinicsData data = new ClinicsData();
         private ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
         private MySqlExport mySqlExport = new MySqlExport();

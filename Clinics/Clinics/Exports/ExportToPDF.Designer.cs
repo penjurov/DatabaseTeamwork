@@ -1,16 +1,16 @@
 ﻿namespace ClinicsProgram.Exports
 {
-    public partial class ExportToPDF
+    public partial class ExportToPdf
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ComboBox Month;
+        private System.Windows.Forms.ComboBox month;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox Year;
+        private System.Windows.Forms.TextBox year;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -35,10 +35,10 @@
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.Month = new System.Windows.Forms.ComboBox();
+            this.month = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.Year = new System.Windows.Forms.TextBox();
+            this.year = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -49,12 +49,12 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.ExportToPDF_click);
+            this.button1.Click += new System.EventHandler(this.ExportToPdf_Click);
             // 
             // comboBox1
             // 
-            this.Month.FormattingEnabled = true;
-            this.Month.Items.AddRange(new object[] {
+            this.month.FormattingEnabled = true;
+            this.month.Items.AddRange(new object[] {
             "January",
             "February",
             "March",
@@ -67,10 +67,10 @@
             "October",
             "November",
             "December"});
-            this.Month.Location = new System.Drawing.Point(12, 24);
-            this.Month.Name = "comboBox1";
-            this.Month.Size = new System.Drawing.Size(118, 21);
-            this.Month.TabIndex = 1;
+            this.month.Location = new System.Drawing.Point(12, 24);
+            this.month.Name = "comboBox1";
+            this.month.Size = new System.Drawing.Size(118, 21);
+            this.month.TabIndex = 1;
             // 
             // label1
             // 
@@ -92,20 +92,20 @@
             // 
             // textBox1
             // 
-            this.Year.Location = new System.Drawing.Point(136, 24);
-            this.Year.Name = "textBox1";
-            this.Year.Size = new System.Drawing.Size(100, 20);
-            this.Year.TabIndex = 4;
+            this.year.Location = new System.Drawing.Point(136, 24);
+            this.year.Name = "textBox1";
+            this.year.Size = new System.Drawing.Size(100, 20);
+            this.year.TabIndex = 4;
             // 
             // ExportToPDF
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
-            this.Controls.Add(this.Year);
+            this.Controls.Add(this.year);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.Month);
+            this.Controls.Add(this.month);
             this.Controls.Add(this.button1);
             this.Name = "ExportToPDF";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
