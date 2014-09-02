@@ -1,37 +1,37 @@
 ﻿namespace ClinicsProgram.Exports
 {
     using System;
-    using System.IO;
     using System.Linq;
-    using System.Web.Script.Serialization;
     using System.Windows.Forms;
 
     using Clinics.Data;
     using Clinics.MySQLModels;
+    using Clinics.Operations.Exports;
 
-    public partial class ExportToJSONAndMySQL : Form
+    public partial class ExportToJsonAndMySql : Form
     {
-        private const string ReportFolder = "../../JsonReports/";
-        private const string FileName = "{0}.json";
-        private ClinicsData db = new ClinicsData();
+        private const string SuccessMessage = "Exporting data to MySQL Server and generating Json files done. The Json files can be find into Reports folder!";
+        private IClinicsData data = new ClinicsData();
         private ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
-
-        public ExportToJSONAndMySQL()
+        private MySqlExport mySqlExport = new MySqlExport();
+        private JsonExport jsonExport = new JsonExport();
+        
+        public ExportToJsonAndMySql()
         {
             this.InitializeComponent();
         }
 
-        ~ExportToJSONAndMySQL()
+        ~ExportToJsonAndMySql()
         {
-            this.mySqlContext.Dispose();
+            this.data.Dispose();
         }
 
-        public void Export()
-        { 
+        private void Export_Click(object sender, EventArgs e)
+        {
             var year = int.Parse(this.txtBoxYear.Text);
             var month = this.cmbBoxMonth.SelectedIndex + 1;
 
-            var groupManipulations = this.db.Manipulations.All()
+            var groupManipulations = this.data.Manipulations.All()
                 .Where(m => m.Date.Month == month && m.Date.Year == year)
                 .GroupBy(m => new { m.SpecialistId, m.ProcedureId });
 
@@ -43,64 +43,11 @@
                 var procedureCount = specialist.Count();
                 var totalPrice = specialist.First().Procedure.Price * specialist.Count();
                 
-                this.GenerateJson(year, month, specialistName, procedureName, procedureCount, totalPrice, specialistId);
-                this.MySqlInsert(year, month, specialistName, procedureName, procedureCount, totalPrice);              
-            }
-        }
-
-        private void MySqlInsert(int year, int month, string specialistName, string procedureName, int procedureCount, decimal totalPrice)
-        {
-            var specialistsStatistics = this.mySqlContext.Specialiststatistics
-                .Where(ss => ss.Specialist.Equals(specialistName) && ss.Procedure.Equals(procedureName) && ss.Month.Equals(month) && ss.Year == year)
-                .FirstOrDefault();
-
-            if (specialistsStatistics == null)
-            {
-                Specialiststatistic newSpecialistStatistics = new Specialiststatistic
-                {
-                    Specialist = specialistName,
-                    Procedure = procedureName,
-                    ProcedureCount = procedureCount,
-                    TotalPrice = totalPrice.ToString(),
-                    Month = month,
-                    Year = year
-                };
-
-                this.mySqlContext.Add(newSpecialistStatistics);
-                this.mySqlContext.SaveChanges();
-            }
-        }
-
-        private void GenerateJson(int year, int month, string specialistName, string procedureName, int procedureCount, decimal totalPrice, Guid specialistId)
-        {
-            object dataForReport = new
-            {
-                Specialist = specialistName,
-                Procedure = procedureName,
-                ProcedureCount = procedureCount,
-                TotalPrice = totalPrice,
-                Month = month,
-                Year = year
-            };
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            string specialistAsJson = serializer.Serialize(dataForReport);
-
-            if (!Directory.Exists(ReportFolder))
-            {
-                Directory.CreateDirectory(ReportFolder);
+                this.jsonExport.Export(year, month, specialistName, procedureName, procedureCount, totalPrice, specialistId);
+                this.mySqlExport.Export(this.mySqlContext, year, month, specialistName, procedureName, procedureCount, totalPrice);              
             }
 
-            StreamWriter writer = new StreamWriter(ReportFolder + string.Format(FileName, specialistId.ToString()));
-            using (writer)
-            {
-                writer.WriteLine(specialistAsJson);
-            }
-        }
-
-        private void Export_Click(object sender, EventArgs e)
-        {
-            this.Export();
+            MessageBox.Show(SuccessMessage);
         }
     }
 }

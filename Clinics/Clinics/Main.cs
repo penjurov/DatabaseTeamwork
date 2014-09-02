@@ -44,7 +44,7 @@
 
         private void ExportToJson_Click(object sender, EventArgs e)
         {
-            var exportToJson = new ExportToJSONAndMySQL();
+            var exportToJson = new ExportToJsonAndMySql();
             exportToJson.ShowDialog();
         }
 

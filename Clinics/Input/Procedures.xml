@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<procedures>
+  <procedure>
+    <name>Amniocentesis</name>
+    <price>85</price>
+    <information>Amniocentesis is a procedure whereby a sample of fluid is removed from the amniotic sac for analysis. The amniotic sac is in the uterine cavity. The amniotic sac is the fluid-filled structure inside a pregnant woman's uterus within which the baby lives. Fetal cells, proteins, and fetal urine freely move within this sac.</information>
+  </procedure>
+  <procedure>
+    <name>Hysteroscopy</name>
+    <price>60</price>
+    <information>This procedure is a minimally invasive surgical procedure for viewing the inside of the uterus. Hysteroscopy is performed by inserting a visualizing scope through the vagina and into the cervical opening. Hysteroscopy allows visualization of the inside of the uterus, including the openings to the Fallopian tubes, as well as direct examination of the cervix, cervical canal, and vagina.</information>
+  </procedure>
+  <procedure>
+    <name>Allergy Shots</name>
+    <price>18</price>
+  </procedure>
+  <procedure>
+    <name>Analysis of Urine (Urinalysis)</name>
+    <price>12</price>
+  </procedure>
+  <procedure>
+    <name>Anti-CCP (Citrulline Antibody)</name>
+    <price>28</price>
+  </procedure>
+  <procedure>
+    <name>Antinuclear Antibody</name>
+    <price>118</price>
+  </procedure>
+  <procedure>
+    <name>Autism Screening and Diagnosis</name>
+    <price>88</price>
+  </procedure>
+  <procedure>
+    <name>Islet Cell Transplantation</name>
+    <price>180</price>
+  </procedure>
+  <procedure>
+    <name>Insulin Pump For Diabetes Mellitus</name>
+    <price>98</price>
+  </procedure>
+  <procedure>
+    <name>Neck Lift Cosmetic Surgery</name>
+    <price>380</price>
+  </procedure>
+</procedures>

@@ -1,23 +1,16 @@
 ﻿namespace ClinicsProgram.Imports
 {
     using System;
-    using System.Linq;
     using System.Windows.Forms;
-    using System.Xml;
 
-    using Clinics.Models;
-    using MongoDB.Bson;
-    using MongoDB.Driver;
+    using Clinics.Operations.Imports;
        
     public partial class ImportFromXml : Form
     {
-        private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";
         private const string Filter = "xml files (*.xml)|*.xml";
-        private static MongoUrl mongoUrl = new MongoUrl(MongoUri);
-        private static MongoClient mongoClient = new MongoClient(mongoUrl);
-        private static MongoServer mongoServer = mongoClient.GetServer();
-        private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
-        private XmlDocument doc = new XmlDocument();
+        private const string SuccessMessage = "Importing data from choosed XML file to MongoDB done!";
+        private const string FileNotSelectMessage = "Please choose xml file!";
+        private XmlImport xmlImport = new XmlImport();
 
         public ImportFromXml()
         {
@@ -49,71 +42,23 @@
         }
 
         private void Import_Click(object sender, EventArgs e)
-        {           
-            this.Import();           
-        }
-
-        private void Import()
-        {
+        {   
             try
             {
                 if (this.fileName.Text != string.Empty)
                 {
-                    this.doc.Load(this.fileName.Text);
-                    XmlNode rootNode = this.doc.DocumentElement;
-                    var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-
-                    this.importProgress.Value = 0;
-                    this.importProgress.Maximum = rootNode.ChildNodes.Count - 1;
-
-                    foreach (XmlNode node in rootNode.ChildNodes)
-                    {
-                        var name = this.GetValue(node, "name");
-                        var price = decimal.Parse(this.GetValue(node, "price"));
-                        var information = this.GetValue(node, "information");
-
-                        var exist = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
-
-                        if (exist == null)
-                        {
-                            Procedure procedure = new Procedure
-                            {
-                                Id = Guid.NewGuid(),
-                                Name = name,
-                                Price = price,
-                                Information = information
-                            };
-
-                            procedures.Insert<Procedure>(procedure);
-                        }
-
-                        if (this.importProgress.Value < this.importProgress.Maximum)
-                        {
-                            this.importProgress.Value++;
-                        }
-                    }
+                    this.xmlImport.Import(this.fileName.Text);
+                    MessageBox.Show(SuccessMessage);
                 }
                 else
                 {
-                    MessageBox.Show("Please choose xml file!");
+                    MessageBox.Show(FileNotSelectMessage);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }           
-        }
-
-        private string GetValue(XmlNode node, string key)
-        {
-            string value = string.Empty;
-
-            if (node[key] != null)
-            {
-                value = node[key].InnerText;
-            }
-
-            return value;
+            }                              
         }
     }
 }

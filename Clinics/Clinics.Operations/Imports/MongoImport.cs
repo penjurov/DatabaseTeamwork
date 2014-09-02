@@ -1,7 +1,6 @@
 ﻿namespace Clinics.Operations.Imports
 {
     using System;
-    using System.Data.Entity.Validation;
     using System.Linq;
 
     using Clinics.Data;
@@ -9,16 +8,27 @@
     using MongoDB.Bson;
     using MongoDB.Driver;
 
-    public class ImportFromMongo
+    public class MongoImport
     {
         private const int NumberOfTables = 5;
         private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";        
-        private static MongoUrl mongoUrl = new MongoUrl(MongoUri);
-        private static MongoClient mongoClient = new MongoClient(mongoUrl);
-        private static MongoServer mongoServer = mongoClient.GetServer();
-        private static MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
+        private static readonly MongoUrl mongoUrl = new MongoUrl(MongoUri);
+        private static readonly MongoClient mongoClient = new MongoClient(mongoUrl);
+        private static readonly MongoServer mongoServer = mongoClient.GetServer();
+        private static readonly MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
 
-        public void ImportTitles(IClinicsData data)
+        public void Import(IClinicsData data)
+        {
+            this.ImportTitles(data);
+            this.ImportProcedures(data);
+            this.ImportSpecialties(data);
+            this.ImportSpecialists(data);
+            this.ImportClinics(data);
+
+            data.SaveChanges();
+        }
+
+        private void ImportTitles(IClinicsData data)
         {
             var allTitles = mongoDb.GetCollection<BsonDocument>("Titles").FindAll();;
 
@@ -49,7 +59,7 @@
             }
         }
 
-        public void ImportClinics(IClinicsData data)
+        private void ImportClinics(IClinicsData data)
         {
             var allClinics = mongoDb.GetCollection<BsonDocument>("Clinics").FindAll();
 
@@ -92,7 +102,7 @@
             }
         }
 
-        public void ImportProcedures(IClinicsData data)
+        private void ImportProcedures(IClinicsData data)
         {
             var allProcedures = mongoDb.GetCollection<BsonDocument>("Procedures").FindAll();
 
@@ -128,7 +138,7 @@
             }
         }
 
-        public void ImportSpecialists(IClinicsData data)
+        private void ImportSpecialists(IClinicsData data)
         {
             var allSpecialists = mongoDb.GetCollection<BsonDocument>("Specialists").FindAll();
 
@@ -180,7 +190,7 @@
             }
         }
 
-        public void ImportSpecialties(IClinicsData data)
+        private void ImportSpecialties(IClinicsData data)
         {
             var allSpecialties = mongoDb.GetCollection<BsonDocument>("Specialties").FindAll();
 

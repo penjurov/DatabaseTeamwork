@@ -10,7 +10,6 @@
         private System.Windows.Forms.OpenFileDialog fileDialogBrowseZipFile;
         private System.Windows.Forms.Button btnBrowseZipFile;
         private System.Windows.Forms.TextBox fileName;
-        private System.Windows.Forms.ProgressBar importProgress;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -38,7 +37,6 @@
             this.fileDialogBrowseZipFile = new System.Windows.Forms.OpenFileDialog();
             this.btnBrowseZipFile = new System.Windows.Forms.Button();
             this.fileName = new System.Windows.Forms.TextBox();
-            this.importProgress = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // btnImport
@@ -73,20 +71,11 @@
             this.fileName.Size = new System.Drawing.Size(433, 20);
             this.fileName.TabIndex = 2;
             // 
-            // importProgress
-            // 
-            this.importProgress.Location = new System.Drawing.Point(12, 70);
-            this.importProgress.Name = "importProgress";
-            this.importProgress.Size = new System.Drawing.Size(560, 23);
-            this.importProgress.Step = 1;
-            this.importProgress.TabIndex = 5;
-            // 
             // ImportFromZipExcelFiles
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
-            this.Controls.Add(this.importProgress);
             this.Controls.Add(this.fileName);
             this.Controls.Add(this.btnBrowseZipFile);
             this.Controls.Add(this.btnImport);

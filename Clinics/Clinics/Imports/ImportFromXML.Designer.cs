@@ -8,7 +8,7 @@
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Button browse;
         private System.Windows.Forms.Button import;
-        private System.Windows.Forms.ProgressBar importProgress;
+        private System.Windows.Forms.TextBox fileName;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -34,7 +34,6 @@
         {
             this.browse = new System.Windows.Forms.Button();
             this.import = new System.Windows.Forms.Button();
-            this.importProgress = new System.Windows.Forms.ProgressBar();
             this.fileName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
@@ -58,14 +57,6 @@
             this.import.UseVisualStyleBackColor = true;
             this.import.Click += new System.EventHandler(this.Import_Click);
             // 
-            // importProgress
-            // 
-            this.importProgress.Location = new System.Drawing.Point(12, 70);
-            this.importProgress.Name = "importProgress";
-            this.importProgress.Size = new System.Drawing.Size(560, 23);
-            this.importProgress.Step = 1;
-            this.importProgress.TabIndex = 4;
-            // 
             // fileName
             // 
             this.fileName.Location = new System.Drawing.Point(139, 15);
@@ -80,7 +71,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
             this.Controls.Add(this.fileName);
-            this.Controls.Add(this.importProgress);
             this.Controls.Add(this.import);
             this.Controls.Add(this.browse);
             this.Name = "ImportFromXml";
@@ -92,7 +82,5 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox fileName;
     }
 }
