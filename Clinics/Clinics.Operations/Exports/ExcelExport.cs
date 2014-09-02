@@ -11,10 +11,10 @@
 
     public class ExcelExport
     {
-        public void Export()
+        public void Export(ClinicsMySQLContext mySqlContext)
         {
             DataTable procedures = this.ReadFromSQLite();
-            DataTable joined = this.JoinData(procedures, "Procedure", "Name");
+            DataTable joined = this.JoinData(mySqlContext, procedures, "Procedure", "Name");
 
             this.SaveDataToExcel(joined);
         }
@@ -73,10 +73,8 @@
             }
         }
 
-        private DataTable JoinData(DataTable procedures, string joinProp, string joinCol)
+        private DataTable JoinData(ClinicsMySQLContext mySqlContext, DataTable procedures, string joinProp, string joinCol)
         {
-            ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
-
             DataTable result = GenerateExcelColumns(procedures, joinCol);
 
             // For each item in the collection fill a row in the excel table

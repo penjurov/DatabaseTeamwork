@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Xml;
 
+    using Clinics.Data;
     using Clinics.Models;
     using MongoDB.Bson;
     using MongoDB.Driver;
@@ -17,33 +18,62 @@
         private static readonly MongoDatabase mongoDb = mongoServer.GetDatabase(mongoUrl.DatabaseName);
         private readonly XmlDocument doc = new XmlDocument();
 
-        public void Import(string fileName)
+        public void Import(IClinicsData data, string fileName)
         {
             this.doc.Load(fileName);
             XmlNode rootNode = this.doc.DocumentElement;
-            var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
-
+            
             foreach (XmlNode node in rootNode.ChildNodes)
             {
                 var name = this.GetValue(node, "name");
                 var price = decimal.Parse(this.GetValue(node, "price"));
                 var information = this.GetValue(node, "information");
 
-                var exist = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
+                this.InportInMongo(name, price, information);
+                this.ImportInSql(data, name, price, information);
+            }
 
-                if (exist == null)
+            data.SaveChanges();
+        }
+
+        private void ImportInSql(IClinicsData data, string name, decimal price, string information)
+        {
+            var exists = data.Procedures.All()
+                .Where(p => p.Name.Equals(name))
+                .FirstOrDefault();
+
+            if (exists == null)
+            {
+                Procedure procedure = new Procedure
                 {
-                    Procedure procedure = new Procedure
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = name,
-                        Price = price,
-                        Information = information
-                    };
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Price = price,
+                    Information = information
+                };
 
-                    procedures.Insert<Procedure>(procedure);
-                }
-            }               
+                data.Procedures.Add(procedure);
+            }
+        }
+
+        private void InportInMongo(string name, decimal price, string information)
+        {
+            var procedures = mongoDb.GetCollection<BsonDocument>("Procedures");
+
+            var exists = procedures.FindAll().Where(p => p["Name"].Equals(name)).FirstOrDefault();
+
+            if (exists == null)
+            {
+                Procedure procedure = new Procedure
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Price = price,
+                    Information = information
+                };
+
+                procedures.Insert<Procedure>(procedure);
+            }
         }
 
         private string GetValue(XmlNode node, string key)

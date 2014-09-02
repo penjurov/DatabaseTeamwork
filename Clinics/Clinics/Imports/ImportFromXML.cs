@@ -3,6 +3,7 @@
     using System;
     using System.Windows.Forms;
 
+    using Clinics.Data;
     using Clinics.Operations.Imports;
        
     public partial class ImportFromXml : Form
@@ -11,10 +12,16 @@
         private const string SuccessMessage = "Importing data from choosed XML file to MongoDB done!";
         private const string FileNotSelectMessage = "Please choose xml file!";
         private XmlImport xmlImport = new XmlImport();
+        private IClinicsData data = new ClinicsData();
 
         public ImportFromXml()
         {
             this.InitializeComponent();
+        }
+
+        ~ImportFromXml()  
+        {
+            this.data.Dispose();
         }
 
         private void Browse_Click(object sender, EventArgs e)
@@ -47,7 +54,7 @@
             {
                 if (this.fileName.Text != string.Empty)
                 {
-                    this.xmlImport.Import(this.fileName.Text);
+                    this.xmlImport.Import(this.data, this.fileName.Text);
                     MessageBox.Show(SuccessMessage);
                 }
                 else

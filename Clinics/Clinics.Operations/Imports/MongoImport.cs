@@ -10,7 +10,6 @@
 
     public class MongoImport
     {
-        private const int NumberOfTables = 5;
         private const string MongoUri = "mongodb://telerik:teamwork2014@ds050077.mongolab.com:50077/telerik";        
         private static readonly MongoUrl mongoUrl = new MongoUrl(MongoUri);
         private static readonly MongoClient mongoClient = new MongoClient(mongoUrl);
@@ -114,7 +113,7 @@
                 var information = this.GetValue(procedure, "Information");
 
                 var existingRecord = data.Procedures.All()
-                    .Where(p => p.Id.Equals(idGuid))
+                    .Where(p => p.Name.Equals(name))
                     .FirstOrDefault();
 
                 if (existingRecord == null)
