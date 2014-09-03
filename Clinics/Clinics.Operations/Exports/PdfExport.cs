@@ -10,14 +10,14 @@
 
     public class PdfExport
     {
-        private const string FileName = "../../Reports/Report.pdf";
         private const string FileHeader = "Aggregated Procedures Report";
         private const string FileFooter = "Total manipulations: ";
+        private readonly string fileName = Directory.GetCurrentDirectory() + "/Reports/Report.pdf";
 
-        public void Export( IClinicsData data, int month, int year)
+        public void Export(IClinicsData data, int month, int year)
         {
             Document doc = new Document(iTextSharp.text.PageSize.LETTER, 10, 10, 42, 35);
-            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(FileName, FileMode.Create));
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(this.fileName, FileMode.Create));
             
             doc.Open();
 

@@ -5,9 +5,9 @@
     using System.Data;
     using System.Data.SQLite;
     using System.IO;
+    using Clinics.MySQLModels;
     using OfficeOpenXml;
     using OfficeOpenXml.Table;
-    using Clinics.MySQLModels;
 
     public class ExcelExport
     {
@@ -44,7 +44,7 @@
         {
             string fileName = "stats";
             string fileNameWithDate = string.Format("{0}_{1}.xlsx", fileName, DateTime.Now.ToString("dd-MM-yyyy"));
-            string fileNameWithPath = string.Format("../../Reports/{0}", fileNameWithDate);
+            string fileNameWithPath = string.Format("{1}/Reports/{0}", fileNameWithDate, Directory.GetCurrentDirectory());
 
             // Delete existing file with same file name.
             if (File.Exists(fileNameWithPath))
@@ -75,7 +75,7 @@
 
         private DataTable JoinData(ClinicsMySQLContext mySqlContext, DataTable procedures, string joinProp, string joinCol)
         {
-            DataTable result = GenerateExcelColumns(procedures, joinCol);
+            DataTable result = this.GenerateExcelColumns(procedures, joinCol);
 
             // For each item in the collection fill a row in the excel table
             foreach (var row in mySqlContext.Specialiststatistics)
@@ -97,7 +97,9 @@
                         foreach (DataColumn procCol in procedures.Columns)
                         {
                             if (procCol.ColumnName != joinCol)
+                            {
                                 insertRow[procCol.ColumnName] = proc[procCol.ColumnName];
+                            }
                         }
 
                         break;
@@ -110,7 +112,7 @@
             return result;
         }
 
-        private static DataTable GenerateExcelColumns(DataTable procedures, string joinCol)
+        private DataTable GenerateExcelColumns(DataTable procedures, string joinCol)
         {
             DataTable result = new DataTable();
 
@@ -124,8 +126,11 @@
             foreach (DataColumn col in procedures.Columns)
             {
                 if (col.ColumnName != joinCol)
+                {
                     result.Columns.Add(col.ColumnName, col.DataType);
+                }
             }
+
             return result;
         }
     }

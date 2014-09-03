@@ -2,18 +2,19 @@
 {
     using System;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Xml.Linq;
     using Clinics.Data;
 
     public class XmlExport
     {
-        private const string FileName = "../../Reports/Specialists-Monthly-Reports.xml";
+        private readonly string fileName = Directory.GetCurrentDirectory() + "/Reports/Specialists-Monthly-Reports.xml";
 
         public void Export(IClinicsData data, int month, int year)
         {
             var reportXml = this.GenerateReportXml(data, year, month);
-            reportXml.Save(FileName);
+            reportXml.Save(this.fileName);
         }
 
         private XElement GenerateReportXml(IClinicsData data, int year, int month)

@@ -9,6 +9,8 @@
     public partial class ImportFromZipExcelFiles : Form
     {
         private const string Filter = "zip files (*.zip)|*.zip";
+        private const string SuccessMessage = "Importing data from choosed zip file to SQL server done!";
+        private const string FileNotSelectMessage = "Please choose zip file!";
         private IClinicsData data = new ClinicsData();
         private ExcelImport excelImport = new ExcelImport();
 
@@ -50,7 +52,15 @@
         {
             try
             {
-                this.excelImport.Import(this.data, this.fileName.Text);
+                if (this.fileName.Text != string.Empty)
+                {
+                    this.excelImport.Import(this.data, this.fileName.Text);
+                    MessageBox.Show(SuccessMessage);
+                }
+                else
+                {
+                    MessageBox.Show(FileNotSelectMessage);
+                }
             }
             catch (Exception ex)
             {

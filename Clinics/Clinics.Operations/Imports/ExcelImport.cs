@@ -75,6 +75,7 @@
         {
             var procedureName = row["Procedure"].ToString();
             var specialistUin = row["SpecialistUIN"].ToString();
+            var information = row["Information"].ToString();
 
             var specialist = data
                 .Specialists.All()
@@ -92,6 +93,7 @@
                 PatientId = currentPatient.Id,
                 SpecialistId = specialist.Id,
                 ProcedureId = procedure.Id,
+                Information = information,
                 Date = DateTime.ParseExact(currentReportDate, "dd-MM-yyyy",  CultureInfo.InvariantCulture)
             };
             return currentManipulation;
@@ -102,7 +104,7 @@
             var patientNumber = row["PatientNumber"].ToString();
             var abreviature = row["Abreviature"].ToString();
             var age = row["Age"].ToString();
-            var gender = row["Gender"].ToString();
+            var gender = row["Gender"].ToString();        
 
             Patient currentPatient = new Patient()
             {

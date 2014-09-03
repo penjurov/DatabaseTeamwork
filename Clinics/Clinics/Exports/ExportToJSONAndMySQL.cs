@@ -1,6 +1,8 @@
 ﻿namespace ClinicsProgram.Exports
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Windows.Forms;
 
@@ -11,6 +13,7 @@
     public partial class ExportToJsonAndMySql : Form
     {
         private const string SuccessMessage = "Exporting data to MySQL Server and generating Json files done. The Json files can be found in Reports folder!";
+        private const string ReportFolder = "/Reports/JsonReports/";
         private IClinicsData data = new ClinicsData();
         private ClinicsMySQLContext mySqlContext = new ClinicsMySQLContext();
         private MySqlExport mySqlExport = new MySqlExport();
@@ -48,6 +51,7 @@
             }
 
             MessageBox.Show(SuccessMessage);
+            Process.Start(Directory.GetCurrentDirectory() + ReportFolder);
         }
     }
 }

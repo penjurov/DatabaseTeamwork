@@ -7,9 +7,9 @@
 
     public class JsonExport
     {
-        private const string ReportFolder = "../../Reports/JsonReports/";
         private const string FileName = "{0}.json";
-
+        private readonly string reportFolder = Directory.GetCurrentDirectory() + "/Reports/JsonReports/";
+        
         public void Export(int year, int month, string specialistName, string procedureName, int procedureCount, decimal totalPrice, Guid specialistId)
         {
             object dataForReport = new
@@ -25,12 +25,12 @@
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             string specialistAsJson = serializer.Serialize(dataForReport);
 
-            if (!Directory.Exists(ReportFolder))
+            if (!Directory.Exists(this.reportFolder))
             {
-                Directory.CreateDirectory(ReportFolder);
+                Directory.CreateDirectory(this.reportFolder);
             }
 
-            StreamWriter writer = new StreamWriter(ReportFolder + string.Format(FileName, specialistId.ToString()));
+            StreamWriter writer = new StreamWriter(this.reportFolder + string.Format(FileName, specialistId.ToString()));
             using (writer)
             {
                 writer.WriteLine(specialistAsJson);
